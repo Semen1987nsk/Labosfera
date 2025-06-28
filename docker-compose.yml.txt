@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: labosfera_backend
+    command: gunicorn labosfera_project.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=labosfera_db
+      - DB_USER=labosfera_user
+      - DB_PASSWORD=Olimp_2025! # Замените на надежный пароль
+      - DB_HOST=db
+      - DB_PORT=5432
+
+  db:
+    image: postgres:15-alpine
+    container_name: labosfera_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=labosfera_db
+      - POSTGRES_USER=labosfera_user
+      - POSTGRES_PASSWORD=Olimp_2025! # Используйте тот же пароль, что и выше
+
+volumes:
+  postgres_data:
