@@ -1,9 +1,12 @@
+# Строку 'version' можно удалить, так как она устарела
 services:
   backend:
+    # Указываем, что Dockerfile находится в текущей директории (.)
     build: .
     container_name: labosfera_backend
     command: gunicorn labosfera_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
+      # Монтируем текущую директорию (.) в /app внутри контейнера
       - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -11,9 +14,11 @@ services:
       db:
         condition: service_healthy
     environment:
+      # ИСПРАВЛЕНО: Добавляем эту строку, чтобы Python искал модули в папке /app
+      - PYTHONPATH=/app
       - DB_NAME=labosfera_db
       - DB_USER=labosfera_user
-      - DB_PASSWORD=Olimp_2025!
+      - DB_PASSWORD=Olimp_2025! # Убедитесь, что тут ваш пароль
       - DB_HOST=db
       - DB_PORT=5432
 
@@ -25,7 +30,7 @@ services:
     environment:
       - POSTGRES_DB=labosfera_db
       - POSTGRES_USER=labosfera_user
-      - POSTGRES_PASSWORD=Olimp_2025!
+      - POSTGRES_PASSWORD=Olimp_2025! # И тут тот же пароль
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U labosfera_user -d labosfera_db"]
       interval: 5s
@@ -38,8 +43,8 @@ services:
     ports:
       - "8000:80"
     volumes:
-      # ИСПРАВЛЕНО: Указываем точный путь к конфигу
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      # Используем надежное монтирование папки в папку
+      - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     depends_on:

@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/Button';
-import { MegaMenu } from '@/components/MegaMenu';
+import { Button } from '@/components/Button'; // Этот путь ВЕРНЫЙ
+import { MegaMenu } from './MegaMenu'; // <-- ИСПРАВЛЕННЫЙ ПУТЬ
 
 export const Header = () => {
   return (
