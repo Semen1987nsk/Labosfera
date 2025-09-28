@@ -32,3 +32,17 @@
     ```bash
     npm run dev
     ```
+
+
+
+cd /workspaces/Labosfera/backend
+
+
+Bash
+docker-compose up -d
+
+
+cd /workspaces/Labosfera/frontend
+
+Bash
+npm run dev
