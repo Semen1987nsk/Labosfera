@@ -1,0 +1,15 @@
+{
+  "name": "Labosfera Frontend",
+  
+  // Эта секция автоматически открывает и настраивает порты
+  "forwardPorts": [3000],
+
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend (Next.js App)",
+      "onAutoForward": "openBrowser",
+      // САМОЕ ВАЖНОЕ: делаем порт публичным по умолчанию
+      "visibility": "public"
+    }
+  }
+}

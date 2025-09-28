@@ -2,37 +2,7 @@ import { Button } from '@/components/Button';
 import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/ui/ProductCard';
 import Link from 'next/link';
-
-// --- Тип данных для товара ---
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  image: string | null;
-  slug: string; // Добавляем slug для будущих ссылок
-}
-
-// --- ФУНКЦИЯ ДЛЯ ЗАГРУЗКИ НАШЕЙ ПРОДУКЦИИ С API ---
-async function getOurProducts(): Promise<Product[]> {
-  // Используем ваш АКТУАЛЬНЫЙ URL для Codespace
-  const apiUrl = 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev/api/v1/products/';
-  try {
-    const res = await fetch(apiUrl, { 
-      next: { revalidate: 3600 }, // Кэшируем данные на 1 час
-      headers: {
-        'Accept': 'application/json', // Обязательный заголовок
-      }
-    });
-    if (!res.ok) {
-      console.error("Failed to fetch products:", res.status);
-      return [];
-    }
-    return await res.json();
-  } catch (error) {
-    console.error("Failed to fetch products:", error);
-    return [];
-  }
-}
+import { api, Product } from '@/lib/api'; // <-- ИМПОРТИРУЕМ НАШ API-КЛИЕНТ И ТИП
 
 // --- Временные данные для "Готовых решений" ---
 const readySolutions = [
@@ -42,14 +12,13 @@ const readySolutions = [
   { title: 'IT-полигон и робототехника', description: 'Современное оснащение для будущих инженеров' },
 ];
 
-// --- КОМПОНЕНТ ГЛАВНОЙ СТРАНИЦЫ ---
 export default async function HomePage() {
-  // Получаем реальные данные о наших продуктах
-  const ourProducts = await getOurProducts();
+  // Получаем наши продукты через централизованный API-клиент
+  const ourProducts = await api.getProducts() || [];
 
   return (
     <main>
-      {/* === Блок 1: Первый экран (Hero) === */}
+      {/* === Блок 1: Первый экран (Hero) с новым позиционированием === */}
       <div className="relative text-center py-32 md:py-48 flex items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-electric-blue/20 rounded-full blur-3xl animate-pulse" />
         <Container className="relative z-10">
@@ -70,7 +39,7 @@ export default async function HomePage() {
         </Container>
       </div>
 
-      {/* === Блок 2: Наша продукция === */}
+      {/* === Блок 2: Наша продукция (вместо "Популярные товары") === */}
       <section className="py-20 bg-dark-blue">
         <Container>
           <div className="text-center">

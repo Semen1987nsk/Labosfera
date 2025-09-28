@@ -1,18 +1,16 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ychy5uakxhxg1%n5oj2#j4*3oj^c$a8eht@4#3y7l(kjpbqc+=' 
+# --- БЕЗОПАСНОСТЬ: Ключ и режим отладки читаются из переменных окружения ---
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-temporary-default-key-for-dev')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# --- БЕЗОПАСНОСТЬ: Указываем конкретные хосты ---
+# Используйте ваш актуальный URL от Codespace
+ALLOWED_HOSTS = ['humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev']
 
-ALLOWED_HOSTS = ['*']
-
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,7 +55,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'labosfera_project.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -69,7 +66,6 @@ DATABASES = {
     }
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
@@ -77,36 +73,35 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (User-uploaded content)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ==============================================================================
 # НАСТРОЙКИ CORS и CSRF
 # ==============================================================================
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = [
-    'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev',
-    'https://localhost:8000',
+
+CORS_ALLOWED_ORIGINS = [
+    'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev', # Ваш фронтенд
 ]
 
-# ==============================================================================
-# НАСТРОЙКИ DJANGO REST FRAMEWORK
-# ==============================================================================
+# ИСПРАВЛЕНО: Добавляем и публичный URL Codespace, и localhost, который он использует
+CSRF_TRUSTED_ORIGINS = [
+    'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev',
+    'https://localhost:8000', # <-- ДОБАВЛЕНА ЭТА СТРОКА
+]
+
+# --- НАСТРОЙКИ DJANGO REST FRAMEWORK ---
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -114,11 +109,11 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ]
+    ],
+    # --- ДОБАВЛЕНА ПАГИНАЦИЯ ---
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20
 }
 
-# ==============================================================================
-# НАСТРОЙКИ ДЛЯ РАБОТЫ ЗА NGINX (REVERSE PROXY)
-# ==============================================================================
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

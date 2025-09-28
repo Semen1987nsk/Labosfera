@@ -11,7 +11,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'price', 'image', 'description', 'category', 'category_name']
+        # ИСПРАВЛЕНО: Удалено поле 'slug', которого нет в модели Product
+        fields = ['id', 'name', 'price', 'image', 'description', 'category', 'category_name']
     
     def get_image(self, obj):
         request = self.context.get('request')
