@@ -10,4 +10,4 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # Для товаров оставляем поиск по id
+    lookup_field = 'slug'  # Ищем товары по slug

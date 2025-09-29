@@ -4,11 +4,10 @@ import { Popover, Transition } from '@headlessui/react';
 import Link from 'next/link';
 import { Fragment, useState } from 'react';
 
-// ОБНОВЛЕННЫЕ КАТЕГОРИИ
 const categories = [
-  { name: 'Физика', slug: 'fizika', description: 'Оборудование для ОГЭ/ГИА по физике' },
-  { name: 'Химия', slug: 'himiya', description: 'Оборудование для ОГЭ/ГИА по химии' },
-  { name: 'Программное обеспечение', slug: 'software', description: 'Интерактивные лаборатории' },
+  { name: 'Физика', slug: 'fizika', description: 'Оборудование для ОГЭ по физике' },
+  { name: 'Химия', slug: 'himiya', description: 'Оборудование для ОГЭ по химии' },
+  { name: 'Программное обеспечение', slug: 'software', description: 'Интерактивные ОГЭ-лаборатории по физике и химии' },
 ];
 
 export const MegaMenu = () => {

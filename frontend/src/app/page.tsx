@@ -3,18 +3,9 @@ import { Container } from '@/components/ui/Container';
 import { ProductCard } from '@/components/ui/ProductCard';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { SpotlightCard } from '@/components/ui/SpotlightCard';
-import { TechTicker } from '@/components/ui/TechTicker';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
-
-// --- Тип данных для товара (для ясности) ---
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  image: string | null;
-  slug: string;
-}
+import { SpotlightCard } from '@/components/ui/SpotlightCard';
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground';
 
 // --- Иконки для блока "Производство" ---
 const WrenchIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -34,25 +25,24 @@ const ArchiveBoxIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 // ----------------------------------------------------
 
-// --- Данные для бегущей строки (можете менять здесь) ---
-const techItems = ["ФГОС", "ГИА-ЛАБОРАТОРИЯ", "PYTHON", "DJANGO", "NEXT.JS", "REACT", "DOCKER", "POSTGRESQL", "3D-МОДЕЛИРОВАНИЕ", "ИНЖЕНЕРИЯ"];
+// --- Данные для бегущей строки ---
 
 // --- КОМПОНЕНТ ГЛАВНОЙ СТРАНИЦЫ ---
 export default async function HomePage() {
-  // Получаем реальные данные о продуктах через наш API-клиент
   const ourProducts = (await api.getProducts())?.slice(0, 4) || [];
 
   return (
     <main>
       {/* === Блок 1: Первый экран (Hero) === */}
       <div className="relative text-center py-32 md:py-48 flex items-center justify-center overflow-hidden">
+        <AnimatedBackground />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-electric-blue/20 rounded-full blur-3xl animate-pulse" />
         <Container className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold">
             Учебное оборудование от производителя <span className="text-electric-blue">ЛАБОСФЕРА</span>
           </h1>
           <p className="mt-6 max-w-3xl mx-auto text-lg text-light-grey/80">
-            Комплексное оснащение школ по всей России в соответствии с ФГОС. Собственное производство и прямая заводская гарантия.
+            Поставляем оборудование для ОГЭ по физике/химии в полном соответствии ФИПИ. Собственное производство и прямая заводская гарантия.
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/catalog"><Button>Смотреть продукцию</Button></Link>
@@ -62,11 +52,20 @@ export default async function HomePage() {
       </div>
 
       {/* === Блок 2: Наше производство (Bento Grid + Spotlight) === */}
-      <AnimatedSection className="py-20 bg-dark-blue">
-        <Container>
+      <AnimatedSection className="py-20 bg-dark-blue relative overflow-hidden">
+        {/* Добавляем плавающие частицы на фон */}
+        <div className="absolute inset-0">
+          <div className="absolute w-64 h-64 -left-32 -top-32 bg-electric-blue/10 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute w-96 h-96 -right-48 -bottom-48 bg-electric-blue/5 rounded-full blur-3xl animate-float-slower"></div>
+        </div>
+        <Container className="relative z-10">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">Собственное производство — гарантия качества</h2>
-            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">Мы не просто продаем, мы создаем. Это позволяет нам контролировать каждый этап и предлагать уникальные решения.</p>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-light-grey/80 bg-clip-text text-transparent">
+              Собственное производство — гарантия высочайшего качества
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70 animate-fade-in">
+              Мы не просто продаем, мы создаем. Это позволяет нам контролировать каждый этап и предлагать качественное оборудование и ПО.
+            </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <SpotlightCard className="lg:col-span-2 flex flex-col items-center justify-center text-center">
@@ -89,8 +88,6 @@ export default async function HomePage() {
       </AnimatedSection>
 
       {/* === Бегущая строка === */}
-      <TechTicker items={techItems} />
-
       {/* === Блок 3: Наша продукция (с 3D-эффектом) === */}
       <AnimatedSection className="py-20">
         <Container>
@@ -109,7 +106,6 @@ export default async function HomePage() {
           )}
         </Container>
       </AnimatedSection>
-      
     </main>
   );
 }

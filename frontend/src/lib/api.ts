@@ -7,6 +7,12 @@ export interface PaginatedResponse<T> {
 }
 
 // Определяем типы данных в одном месте
+export interface ProductImage {
+  id: number;
+  image: string;
+  is_main: boolean;
+}
+
 export interface Category {
   id: number;
   name: string;
@@ -17,12 +23,12 @@ export interface Category {
 export interface Product {
   id: number;
   name: string;
+  slug: string;
   price: string;
-  image: string | null;
+  images: ProductImage[];
   description: string;
   category: number;
   category_name?: string;
-  slug: string;
 }
 
 // Наш "мост" к API
@@ -30,10 +36,10 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    // Читаем URL из переменных окружения.
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
   }
 
-  // Теперь request может работать и с обычными ответами, и с пагинированными
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -45,22 +51,20 @@ class ApiClient {
       });
 
       if (!response.ok) {
-        console.error(`API Error: ${response.status} ${response.statusText}`);
+        console.error(`API Error: ${response.status} ${response.statusText} for ${this.baseUrl}${endpoint}`);
         return null;
       }
 
       return response.json();
 
     } catch (error) {
-      console.error('Network or parsing error:', error);
+      console.error(`Network or parsing error for ${this.baseUrl}${endpoint}:`, error);
       return null;
     }
   }
 
   // --- Методы для работы с API ---
 
-  // ИЗМЕНЕНО: Теперь эти методы ожидают пагинированный ответ
-  // и возвращают только массив `results`.
   public async getCategories(): Promise<Category[] | null> {
     const response = await this.request<PaginatedResponse<Category>>('/api/v1/categories/');
     return response ? response.results : null;
@@ -71,15 +75,16 @@ class ApiClient {
     return response ? response.results : null;
   }
   
-  // Детальные запросы не пагинируются, их оставляем как есть
   public getCategoryDetail(slug: string) {
     return this.request<Category>(`/api/v1/categories/${slug}/`);
   }
   
-  public getProductDetail(id: string) {
-    return this.request<Product>(`/api/v1/products/${id}/`);
+  public async getProductDetail(slug: string): Promise<Product | null> {
+    console.log('Fetching product details for slug:', slug);
+    const response = await this.request<Product>(`/api/v1/products/${slug}/`);
+    console.log('API response:', response);
+    return response;
   }
 }
 
-// Создаем единственный экземпляр клиента для всего приложения
 export const api = new ApiClient();

@@ -9,7 +9,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 # --- БЕЗОПАСНОСТЬ: Указываем конкретные хосты ---
 # Используйте ваш актуальный URL от Codespace
-ALLOWED_HOSTS = ['humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev']
+ALLOWED_HOSTS = ['humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -92,7 +92,33 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ==============================================================================
 
 CORS_ALLOWED_ORIGINS = [
-    'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev', # Ваш фронтенд
+    'https://humble-winner-97w5q7j66rqxhx9qq-3000.app.github.dev',  # Frontend URL
+    'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev',  # Alternative Frontend URL
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+]
+
+# Разрешаем все методы CORS
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Разрешаем все заголовки
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 # ИСПРАВЛЕНО: Добавляем и публичный URL Codespace, и localhost, который он использует
@@ -117,3 +143,11 @@ REST_FRAMEWORK = {
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ==============================================================================
+# НАСТРОЙКИ ЗАГРУЗКИ ФАЙЛОВ
+# ==============================================================================
+# Устанавливаем максимальный размер загружаемого файла в 20 МБ (20 * 1024 * 1024 байт)
+# Это должно быть равно или меньше значения client_max_body_size в nginx.conf
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520

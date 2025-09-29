@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="45" fill="#14182C"/>
+  <text x="90" y="120" font-family="Arial" font-size="120" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Л</text>
+  <circle cx="135" cy="45" r="20" fill="#3A86FF"/>
+</svg>

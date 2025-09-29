@@ -1,32 +1,33 @@
 from rest_framework import serializers
-from .models import Category, Product
+from .models import Category, Product, ProductImage
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image', 'is_main']
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if obj.image and hasattr(obj.image, 'url'):
+            # Строим абсолютный URL
+            url = request.build_absolute_uri(obj.image.url)
+            # ГАРАНТИРОВАННО ЗАМЕНЯЕМ HTTP НА HTTPS
+            if '127.0.0.1' not in url and 'localhost' not in url:
+                url = url.replace('http://', 'https://')
+            return url
+        return None
 
 class ProductSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для модели Product.
-    Формирует полный и безопасный (https) URL для изображения.
-    """
-    image = serializers.SerializerMethodField()
+    images = ProductImageSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
 
     class Meta:
         model = Product
-        # ИСПРАВЛЕНО: Удалено поле 'slug', которого нет в модели Product
-        fields = ['id', 'name', 'price', 'image', 'description', 'category', 'category_name']
-    
-    def get_image(self, obj):
-        request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
-            if request is not None:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        return None
+        fields = ['id', 'name', 'slug', 'price', 'description', 'category', 'category_name', 'images']
 
 class CategorySerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для модели Category.
-    Включает в себя вложенный список продуктов.
-    """
     products = ProductSerializer(many=True, read_only=True)
     image = serializers.SerializerMethodField()
 
@@ -37,7 +38,8 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         request = self.context.get('request')
         if obj.image and hasattr(obj.image, 'url'):
-            if request is not None:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            url = request.build_absolute_uri(obj.image.url)
+            if '127.0.0.1' not in url and 'localhost' not in url:
+                url = url.replace('http://', 'https://')
+            return url
         return None

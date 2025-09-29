@@ -41,18 +41,28 @@ export const SpotlightCard = ({ children, className }: SpotlightCardProps) => {
       onBlur={handleBlur}
       onMouseEnter={handleFocus}
       onMouseLeave={handleBlur}
-      className={clsx("relative overflow-hidden rounded-lg border border-white/10 p-8 bg-deep-blue", className)}
+      className={clsx(
+        "group relative overflow-hidden rounded-xl border border-white/10 p-8 bg-deep-blue/60 backdrop-blur-sm",
+        "transition-all duration-300 ease-out",
+        "hover:border-electric-blue/30 hover:shadow-lg hover:shadow-electric-blue/20",
+        className
+      )}
     >
-      {/* Слой с эффектом подсветки. Он будет под контентом. */}
+      {/* Слой с эффектом подсветки */}
       <div
-        className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-px opacity-0 transition-all duration-500"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(58, 134, 255, 0.15), transparent 40%)`,
+          background: `radial-gradient(800px circle at ${position.x}px ${position.y}px, rgba(58, 134, 255, 0.25), transparent 40%)`,
         }}
       />
-      {/* ИСПРАВЛЕНИЕ: Оборачиваем контент в div, чтобы поднять его НАД слоем подсветки */}
-      <div className="relative z-10">
+      {/* Фоновое свечение */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-electric-blue/30 to-transparent" />
+        <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-electric-blue/30 to-transparent" />
+      </div>
+      {/* Контент */}
+      <div className="relative z-10 transition-transform duration-300 group-hover:scale-[1.02]">
         {children}
       </div>
     </div>
