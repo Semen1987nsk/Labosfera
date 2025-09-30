@@ -1,9 +1,52 @@
+import { ImageResponse } from 'next/og'
+
+export const size = {
+  width: 32,
+  height: 32,
+}
+
+export const contentType = 'image/png'
+
 export default function Icon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-      <rect width="32" height="32" rx="8" fill="#14182C"/>
-      <text x="16" y="22" fontFamily="Arial" fontSize="20" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">Л</text>
-      <circle cx="24" cy="8" r="4" fill="#3A86FF"/>
-    </svg>
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          background: '#14182C',
+          borderRadius: 8,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            color: 'white',
+            fontSize: 20,
+            fontWeight: 'bold',
+            fontFamily: 'Arial',
+          }}
+        >
+          Л
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            width: 8,
+            height: 8,
+            background: '#3A86FF',
+            borderRadius: '50%',
+          }}
+        />
+      </div>
+    ),
+    {
+      ...size,
+    }
   )
 }
