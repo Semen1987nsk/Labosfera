@@ -25,7 +25,7 @@ export const Header = () => {
           <Link href="/certificates" className="text-base font-semibold leading-6 text-light-grey/80 hover:text-white">
             Сертификаты
           </Link>
-          <Link href="/custom-task" className="text-base font-semibold leading-6 text-light-grey/80 hover:text-white">
+          <Link href="/technical-task" className="text-base font-semibold leading-6 text-light-grey/80 hover:text-white">
             Техническое задание
           </Link>
           <Link href="/contacts" className="text-base font-semibold leading-6 text-light-grey/80 hover:text-white">

@@ -1,6 +1,10 @@
 import { Button } from '@/components/Button';
 import { Container } from '@/components/ui/Container';
-import { ProductCard } from '@/components/ui/ProductCard';
+import { InteractiveCarousel } from '@/components/ui/InteractiveCarousel';
+import { WhyWeCreatedSection } from '@/components/ui/WhyWeCreatedSection';
+import { ValuesSection } from '@/components/ui/ValuesSection';
+import { ExpertiseSection } from '@/components/ui/ExpertiseSection';
+import { CallbackForm } from '@/components/ui/CallbackForm';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
@@ -29,7 +33,7 @@ const ArchiveBoxIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 // --- КОМПОНЕНТ ГЛАВНОЙ СТРАНИЦЫ ---
 export default async function HomePage() {
-  const ourProducts = (await api.getProducts())?.slice(0, 4) || [];
+  const ourProducts = (await api.getProducts()) || []; // Убираем ограничение для infinite scroll
 
   return (
     <main>
@@ -88,24 +92,32 @@ export default async function HomePage() {
       </AnimatedSection>
 
       {/* === Бегущая строка === */}
-      {/* === Блок 3: Наша продукция (с 3D-эффектом) === */}
+      {/* === Блок 3: Почему мы создали ЛАБОСФЕРУ === */}
+      <WhyWeCreatedSection />
+
+      {/* === Блок 4: Наши ценности и миссия === */}
+      <ValuesSection />
+
+      {/* === Блок 5: Наша экспертиза === */}
+      <ExpertiseSection />
+
+      {/* === Блок 5: Наша продукция (интерактивная карусель) === */}
       <AnimatedSection className="py-20">
         <Container>
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Наша продукция</h2>
-            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">Мы производим и поставляем всё необходимое для успешной сдачи практической части экзамена.</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-electric-blue to-purple-400 bg-clip-text text-transparent">
+              Наша продукция
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">
+              Управляйте каруселью с помощью мыши, кнопок или точек навигации
+            </p>
           </div>
-          {ourProducts.length > 0 ? (
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {ourProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <p className="mt-12 text-center text-light-grey/70">Не удалось загрузить продукцию.</p>
-          )}
+          <InteractiveCarousel products={ourProducts} />
         </Container>
       </AnimatedSection>
+
+      {/* === Блок 6: Форма обратной связи === */}
+      <CallbackForm />
     </main>
   );
 }
