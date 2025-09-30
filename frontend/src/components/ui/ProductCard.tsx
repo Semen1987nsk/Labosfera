@@ -25,27 +25,34 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Tilt
-      tiltMaxAngleX={8}
-      tiltMaxAngleY={8}
-      perspective={1500}
+      tiltMaxAngleX={10}
+      tiltMaxAngleY={10}
+      perspective={2000}
       glareEnable={true}
-      glareMaxOpacity={0.15}
+      glareMaxOpacity={0.2}
       glarePosition="all"
       scale={1.02}
-      transitionSpeed={2000}
-      className="h-full transition-all duration-500 ease-out animate-fade-in hover:animate-glow"
+      transitionSpeed={1500}
+      className="h-full transition-all duration-500 ease-out animate-fade-in group"
     >
-      <div className="bg-dark-blue rounded-lg overflow-hidden group flex flex-col h-full border border-white/10">
-        <Link href={`/product/${product.slug}`} className="block">
-          <div className="relative w-full h-48 bg-deep-blue">
+      <div className="bg-dark-blue rounded-lg overflow-hidden flex flex-col h-full border border-white/10 relative">
+        {/* Добавляем эффект свечения по краям */}
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-electric-blue/0 via-electric-blue/0 to-electric-blue/0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none" />
+        
+        <Link href={`/product/${product.slug}`} className="block relative group/image">
+          <div className="relative w-full h-48 bg-deep-blue overflow-hidden">
             {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={product.name}
-                fill
-                style={{ objectFit: 'cover' }}
-                className="transition-transform duration-300 group-hover:scale-105"
-              />
+              <>
+                {/* Добавляем эффект блика */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover/image:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                <Image
+                  src={imageUrl}
+                  alt={product.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  className="transition-all duration-500 ease-out group-hover/image:scale-110 group-hover/image:filter group-hover/image:brightness-110"
+                />
+              </>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <span className="text-light-grey/50">Нет изображения</span>
@@ -53,16 +60,29 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             )}
           </div>
         </Link>
-        <div className="p-4 flex flex-col flex-grow">
+
+        <div className="p-6 flex flex-col flex-grow relative z-10">
           <h3 className="font-semibold text-lg h-14 flex-grow">
-            <Link href={`/product/${product.slug}`} className="hover:text-electric-blue transition-colors">{product.name}</Link>
+            <Link 
+              href={`/product/${product.slug}`} 
+              className="hover:text-electric-blue transition-all duration-300 hover:tracking-wide"
+            >
+              {product.name}
+            </Link>
           </h3>
-          <p className="text-xl font-bold text-electric-blue mt-2">
-            {parseFloat(product.price).toLocaleString('ru-RU')} ₽
-          </p>
-          <button className="mt-4 w-full bg-electric-blue text-white py-2 rounded-lg hover:opacity-90 transition-opacity">
-            В корзину
-          </button>
+          
+          <div className="mt-4 flex flex-col gap-3">
+            <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-electric-blue to-blue-400 group-hover:to-purple-500 transition-all duration-500">
+              {parseFloat(product.price).toLocaleString('ru-RU')} ₽
+            </p>
+            
+            <button className="relative w-full overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-electric-blue via-blue-500 to-electric-blue bg-[length:200%_100%] group-hover:bg-[100%_100%] transition-all duration-700" />
+              <span className="relative block bg-electric-blue text-white py-3 px-6 rounded-lg group-hover:bg-transparent transition-colors duration-300">
+                В корзину
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </Tilt>
