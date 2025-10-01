@@ -4,48 +4,13 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { Container } from './Container';
 
-const PhoneIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
-  </svg>
-);
-
-const ClockIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-  </svg>
-);
-
-const ChatBubbleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-  </svg>
-);
-
 interface FormData {
   name: string;
   phone: string;
+  email: string;
   organization: string;
   message: string;
 }
-
-const benefits = [
-  {
-    icon: PhoneIcon,
-    title: "Перезвоним в течение часа",
-    description: "В рабочее время отвечаем мгновенно"
-  },
-  {
-    icon: ChatBubbleIcon,
-    title: "Персональная консультация",
-    description: "Подберем оптимальное решение именно для вас"
-  },
-  {
-    icon: ClockIcon,
-    title: "Работаем 24/7",
-    description: "Заявки принимаем круглосуточно"
-  }
-];
 
 export const CallbackForm = () => {
   const ref = useRef(null);
@@ -53,9 +18,12 @@ export const CallbackForm = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     phone: '',
+    email: '',
     organization: '',
     message: ''
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -65,23 +33,97 @@ export const CallbackForm = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Убираем ошибку при вводе
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Поле обязательно для заполнения';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Поле обязательно для заполнения';
+    } else {
+      // Проверяем формат телефона - минимум 10 цифр
+      const phoneDigits = formData.phone.replace(/[^\d]/g, '');
+      if (phoneDigits.length < 10) {
+        newErrors.phone = 'Номер телефона должен содержать минимум 10 цифр';
+      }
+    }
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Введите корректный email';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // Имитируем отправку формы
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    
-    // Сброс формы через 3 секунды
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: '', phone: '', organization: '', message: '' });
-    }, 3000);
+    try {
+      // Подготавливаем данные обращения
+      const contactData = {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        organization: formData.organization,
+        message: formData.message,
+        request_type: 'callback' // Тип обращения - обратный звонок
+      };
+
+      // Отправляем обращение на сервер
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/contacts/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        
+        // Сбрасываем форму через 5 секунд
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            name: '',
+            phone: '',
+            email: '',
+            organization: '',
+            message: ''
+          });
+        }, 5000);
+      } else {
+        // Обрабатываем ошибки валидации от backend
+        if (result.errors) {
+          setErrors(result.errors);
+        } else {
+          throw new Error(result.message || 'Ошибка отправки обращения');
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка отправки обращения:', error);
+      alert('Произошла ошибка при отправке обращения. Попробуйте еще раз или свяжитесь с нами по телефону.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -101,69 +143,90 @@ export const CallbackForm = () => {
           }}
         />
         <motion.div 
-          className="absolute w-64 h-64 -bottom-32 -left-32 bg-purple-500/10 rounded-full blur-3xl"
+          className="absolute w-80 h-80 -bottom-40 -left-40 bg-purple-500/10 rounded-full blur-3xl"
           animate={{
             scale: [1.2, 1, 1.2],
             opacity: [0.4, 0.7, 0.4],
           }}
           transition={{
-            duration: 6,
+            duration: 10,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
+            ease: "easeInOut"
           }}
         />
       </div>
 
       <Container className="relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Content */}
+          {/* Left column - Benefits */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <motion.div
-              className="mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-white via-electric-blue to-purple-400 bg-clip-text text-transparent mb-4">
-                Получите персональную консультацию
-              </h2>
-              <p className="text-xl text-light-grey/80 leading-relaxed">
-                Оставьте заявку, и наш эксперт свяжется с вами для обсуждения оптимального решения для вашей образовательной организации
-              </p>
-            </motion.div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-light-grey bg-clip-text text-transparent">
+              Получите персональную консультацию
+            </h2>
+            <p className="text-xl text-light-grey/80 mb-8 leading-relaxed">
+              Оставьте заявку, и наш эксперт свяжется с вами для обсуждения 
+              оптимального решения для вашей образовательной организации
+            </p>
 
-            {/* Benefits */}
             <div className="space-y-6">
-              {benefits.map((benefit, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center gap-4"
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                >
-                  <motion.div
-                    className="w-12 h-12 bg-gradient-to-r from-electric-blue to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <benefit.icon className="w-6 h-6 text-white" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{benefit.title}</h3>
-                    <p className="text-light-grey/70">{benefit.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+              <motion.div
+                className="flex items-start gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="w-12 h-12 bg-electric-blue/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Перезвоним в течение часа</h3>
+                  <p className="text-light-grey/70">В рабочее время отвечаем мгновенно</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="flex items-start gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <div className="w-12 h-12 bg-electric-blue/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Персональная консультация</h3>
+                  <p className="text-light-grey/70">Подберем оптимальное решение именно для вас</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="flex items-start gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                <div className="w-12 h-12 bg-electric-blue/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Работаем 24/7</h3>
+                  <p className="text-light-grey/70">Заявки принимаем круглосуточно</p>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
 
-          {/* Right side - Form */}
+          {/* Right column - Form */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -176,6 +239,7 @@ export const CallbackForm = () => {
               <div className="relative z-10">
                 {!isSubmitted ? (
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Имя */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -189,12 +253,17 @@ export const CallbackForm = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-light-grey/50 focus:outline-none focus:border-electric-blue focus:ring-2 focus:ring-electric-blue/20 transition-all duration-300"
+                        className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-light-grey/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-all duration-300 ${
+                          errors.name ? 'border-red-400 focus:border-red-400' : 'border-white/10 focus:border-electric-blue'
+                        }`}
                         placeholder="Введите ваше имя"
                       />
+                      {errors.name && (
+                        <p className="mt-2 text-sm text-red-400">{errors.name}</p>
+                      )}
                     </motion.div>
 
+                    {/* Телефон */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -208,12 +277,41 @@ export const CallbackForm = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        required
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-light-grey/50 focus:outline-none focus:border-electric-blue focus:ring-2 focus:ring-electric-blue/20 transition-all duration-300"
+                        className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-light-grey/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-all duration-300 ${
+                          errors.phone ? 'border-red-400 focus:border-red-400' : 'border-white/10 focus:border-electric-blue'
+                        }`}
                         placeholder="+7 (999) 123-45-67"
                       />
+                      {errors.phone && (
+                        <p className="mt-2 text-sm text-red-400">{errors.phone}</p>
+                      )}
                     </motion.div>
 
+                    {/* Email */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.6, delay: 0.75 }}
+                    >
+                      <label className="block text-sm font-medium text-light-grey/80 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-light-grey/50 focus:outline-none focus:ring-2 focus:ring-electric-blue/20 transition-all duration-300 ${
+                          errors.email ? 'border-red-400 focus:border-red-400' : 'border-white/10 focus:border-electric-blue'
+                        }`}
+                        placeholder="your@email.com"
+                      />
+                      {errors.email && (
+                        <p className="mt-2 text-sm text-red-400">{errors.email}</p>
+                      )}
+                    </motion.div>
+
+                    {/* Организация */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -232,6 +330,7 @@ export const CallbackForm = () => {
                       />
                     </motion.div>
 
+                    {/* Сообщение */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -250,10 +349,11 @@ export const CallbackForm = () => {
                       />
                     </motion.div>
 
+                    {/* Кнопка отправки */}
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-electric-blue to-purple-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-electric-blue/90 hover:to-purple-500/90 focus:outline-none focus:ring-2 focus:ring-electric-blue/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                      className="w-full bg-gradient-to-r from-electric-blue to-purple-500 text-white font-semibold py-4 px-6 rounded-xl hover:from-electric-blue/90 hover:to-purple-500/90 focus:outline-none focus:ring-2 focus:ring-electric-blue/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       initial={{ opacity: 0, y: 20 }}
@@ -271,7 +371,9 @@ export const CallbackForm = () => {
                         </div>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
-                          <PhoneIcon className="w-5 h-5" />
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
                           Получить консультацию
                         </span>
                       )}
@@ -283,28 +385,23 @@ export const CallbackForm = () => {
                   </form>
                 ) : (
                   <motion.div
-                    className="text-center py-12"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6 }}
+                    className="text-center py-8"
                   >
                     <motion.div
-                      className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6"
-                      animate={{
-                        scale: [1, 1.1, 1],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                      }}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                      className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
                     >
-                      <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </motion.div>
-                    <h3 className="text-2xl font-bold text-white mb-4">Спасибо за заявку!</h3>
+                    <h3 className="text-2xl font-bold mb-2">Спасибо за обращение!</h3>
                     <p className="text-light-grey/80">
-                      Мы свяжемся с вами в ближайшее время для обсуждения деталей
+                      Мы получили вашу заявку и свяжемся с вами в течение часа в рабочее время.
                     </p>
                   </motion.div>
                 )}

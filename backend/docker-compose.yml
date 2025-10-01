@@ -3,6 +3,8 @@ services:
     build: .
     container_name: labosfera_backend
     command: gunicorn labosfera_project.wsgi:application --bind 0.0.0.0:8000
+    env_file:
+      - .env
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -13,7 +15,7 @@ services:
     environment:
       - PYTHONPATH=/app
       # --- ДОБАВЛЕНЫ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ ---
-      - DJANGO_SECRET_KEY=ychy5uakxhxg1%n5oj2#j4*3oj^c$a8eht@4#3y7l(kjpbqc+= # Ваш сгенерированный ключ
+      - DJANGO_SECRET_KEY=ychy5uakxhxg1-n5oj2-j4-3oj-c-a8eht-4-3y7l-kjpbqc # Ваш сгенерированный ключ
       - DJANGO_DEBUG=True
       # ------------------------------------
       - DB_NAME=labosfera_db
@@ -21,6 +23,9 @@ services:
       - DB_PASSWORD=Olimp_2025!
       - DB_HOST=db
       - DB_PORT=5432
+      # --- TELEGRAM НАСТРОЙКИ ---
+      - TELEGRAM_BOT_TOKEN=8355662949:AAGUHPivIaYcsJlyve3iEaoRdvuVvJhQQ8w
+      - TELEGRAM_CHAT_ID=300596362
 
   db:
     image: postgres:15-alpine

@@ -31,13 +31,43 @@ export interface Product {
   category_name?: string;
 }
 
+// Типы для заявок
+export interface OrderItem {
+  product_id: number;
+  quantity: number;
+}
+
+export interface OrderData {
+  name: string;
+  phone: string;
+  email: string;
+  organization: string;
+  items: OrderItem[];
+}
+
+export interface ContactData {
+  name: string;
+  phone: string;
+  email: string;
+  request_type: string;
+  message: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+  order_id?: number;
+  request_id?: number;
+  errors?: any;
+}
+
 // Наш "мост" к API
 class ApiClient {
   private baseUrl: string;
 
   constructor() {
     // Читаем URL из переменных окружения.
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
@@ -84,6 +114,27 @@ class ApiClient {
     const response = await this.request<Product>(`/api/v1/products/${slug}/`);
     console.log('API response:', response);
     return response;
+  }
+
+  // Методы для заявок
+  public async createOrder(orderData: OrderData): Promise<ApiResponse | null> {
+    return this.request<ApiResponse>('/api/v1/orders/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  }
+
+  public async createContactRequest(contactData: ContactData): Promise<ApiResponse | null> {
+    return this.request<ApiResponse>('/api/v1/contacts/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(contactData),
+    });
   }
 }
 

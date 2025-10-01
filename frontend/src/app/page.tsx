@@ -27,6 +27,11 @@ const ArchiveBoxIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
   </svg>
 );
+const AcademicCapIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+  </svg>
+);
 // ----------------------------------------------------
 
 // --- Данные для бегущей строки ---
@@ -83,9 +88,12 @@ export default async function HomePage() {
               <p className="mt-2 text-light-grey/60">Каждое изделие проходит многоступенчатую проверку.</p>
             </SpotlightCard>
             <SpotlightCard className="lg:col-span-3 flex flex-col items-center justify-center text-center">
-              <ArchiveBoxIcon className="w-12 h-12 text-electric-blue mb-4" />
-              <h3 className="text-xl font-semibold">Складская программа</h3>
-              <p className="mt-2 text-light-grey/60">Поддерживаем наличие популярных комплектов для быстрой отгрузки по всей России.</p>
+              <AcademicCapIcon className="w-12 h-12 text-electric-blue mb-4" />
+              <h3 className="text-xl font-semibold">Высококвалифицированные кадры</h3>
+              <p className="mt-2 text-light-grey/60 max-w-3xl mx-auto">
+                Команда экспертов с опытом 15+ лет: инженеры-конструкторы, методисты ФГОС и эксперты ФИПИ. 
+                Создаём не просто оборудование, а готовые образовательные решения с методичками и обучением педагогов.
+              </p>
             </SpotlightCard>
           </div>
         </Container>

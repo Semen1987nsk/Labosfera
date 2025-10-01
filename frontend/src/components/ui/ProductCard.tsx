@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Tilt from 'react-parallax-tilt';
 import { Product } from '@/lib/api'; // Импортируем наш обновленный тип
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +13,13 @@ interface ProductCardProps {
 const BACKEND_URL = 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const { addItem } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+  };
   // --- НОВАЯ ЛОГИКА ПОИСКА ГЛАВНОГО ИЗОБРАЖЕНИЯ ---
   // 1. Ищем изображение, у которого стоит галочка "Главное изображение".
   // 2. Если такого нет, берем просто первое изображение из списка.
@@ -76,7 +84,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               {parseFloat(product.price).toLocaleString('ru-RU')} ₽
             </p>
             
-            <button className="relative w-full overflow-hidden">
+            <button 
+              className="relative w-full overflow-hidden"
+              onClick={handleAddToCart}
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-electric-blue via-blue-500 to-electric-blue bg-[length:200%_100%] group-hover:bg-[100%_100%] transition-all duration-700" />
               <span className="relative block bg-electric-blue text-white py-3 px-6 rounded-lg group-hover:bg-transparent transition-colors duration-300">
                 В корзину

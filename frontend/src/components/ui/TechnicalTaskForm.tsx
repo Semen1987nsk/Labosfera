@@ -47,6 +47,12 @@ export const TechnicalTaskForm = () => {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Поле обязательно для заполнения';
+    } else {
+      // Проверяем формат телефона - минимум 10 цифр
+      const phoneDigits = formData.phone.replace(/[^\d]/g, '');
+      if (phoneDigits.length < 10) {
+        newErrors.phone = 'Номер телефона должен содержать минимум 10 цифр';
+      }
     }
 
     if (!formData.email.trim()) {

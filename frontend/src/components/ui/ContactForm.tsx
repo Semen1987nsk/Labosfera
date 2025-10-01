@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/Button';
+import { api, type ContactData } from '@/lib/api';
 
 export const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -47,6 +48,12 @@ export const ContactForm = () => {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Поле обязательно для заполнения';
+    } else {
+      // Проверяем формат телефона - минимум 10 цифр
+      const phoneDigits = formData.phone.replace(/[^\d]/g, '');
+      if (phoneDigits.length < 10) {
+        newErrors.phone = 'Номер телефона должен содержать минимум 10 цифр';
+      }
     }
 
     if (!formData.subject.trim()) {
@@ -72,23 +79,45 @@ export const ContactForm = () => {
       setIsSubmitting(true);
       
       try {
-        // Имитация отправки формы
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Подготавливаем данные для API
+        const contactData: ContactData = {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          request_type: 'general', // Можно сделать динамическим на основе subject
+          message: `Тема: ${formData.subject}\n\n${formData.message}`
+        };
+
+        // Отправляем через API
+        const response = await api.createContactRequest(contactData);
         
-        console.log('Форма отправлена:', formData);
-        alert('Спасибо! Ваше сообщение отправлено. Мы свяжемся с вами в ближайшее время.');
-        
-        // Очищаем форму
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: '',
-          agreement: false
-        });
+        if (response && response.success) {
+          alert('Спасибо! Ваше сообщение отправлено. Мы свяжемся с вами в ближайшее время.');
+          
+          // Очищаем форму
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            subject: '',
+            message: '',
+            agreement: false
+          });
+        } else {
+          // Обрабатываем ошибки валидации от backend
+          if (response?.errors) {
+            setErrors(response.errors);
+          } else {
+            throw new Error(response?.message || 'Ошибка отправки');
+          }
+        }
       } catch (error) {
-        alert('Произошла ошибка при отправке. Попробуйте еще раз.');
+        console.error('Ошибка отправки формы:', error);
+        
+        // Если это не ошибка валидации, показываем общее сообщение
+        if (!errors || Object.keys(errors).length === 0) {
+          alert('Произошла ошибка при отправке. Попробуйте еще раз.');
+        }
       } finally {
         setIsSubmitting(false);
       }

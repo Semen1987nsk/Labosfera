@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'catalog.apps.CatalogConfig',
+    'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,14 @@ REST_FRAMEWORK = {
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ==============================================================================
+# НАСТРОЙКИ TELEGRAM УВЕДОМЛЕНИЙ
+# ==============================================================================
+
+# Настройки Telegram бота
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '')
 
 # ==============================================================================
 # НАСТРОЙКИ ЗАГРУЗКИ ФАЙЛОВ

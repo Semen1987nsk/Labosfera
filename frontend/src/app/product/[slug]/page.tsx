@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { api, Product } from "@/lib/api";
 import { useEffect, useState } from "react"; // <-- Импортируем хуки
+import { useCart } from '@/contexts/CartContext';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
 
@@ -17,6 +18,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { addItem } = useCart();
 
   // Загружаем данные при монтировании компонента
   useEffect(() => {
@@ -118,7 +120,12 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               dangerouslySetInnerHTML={{ __html: product.description || 'Подробное описание товара скоро появится.' }}
             />
             <div className="mt-8">
-              <Button className="w-full md:w-auto">Добавить в корзину</Button>
+              <Button 
+                className="w-full md:w-auto"
+                onClick={() => product && addItem(product)}
+              >
+                Добавить в корзину
+              </Button>
             </div>
             <div className="mt-8 border-t border-white/10 pt-4 text-sm text-light-grey/60">
               <p>Артикул: LBS-{product.id.toString().padStart(6, '0')}</p>

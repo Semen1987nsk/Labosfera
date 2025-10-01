@@ -14,7 +14,7 @@ export const InfiniteScrollProducts = ({ products }: InfiniteScrollProductsProps
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const observer = useRef<IntersectionObserver>();
+  const observer = useRef<IntersectionObserver | null>(null);
   
   const PRODUCTS_PER_PAGE = 2; // Показываем по 2 продукта за раз для демонстрации
 
@@ -30,17 +30,13 @@ export const InfiniteScrollProducts = ({ products }: InfiniteScrollProductsProps
       const endIndex = startIndex + PRODUCTS_PER_PAGE;
       
       // Создаем бесконечный цикл продуктов
-      const newProducts = [];
+      const newProducts: Product[] = [];
       for (let i = startIndex; i < endIndex; i++) {
         const productIndex = i % products.length;
         const product = products[productIndex];
         if (product) {
-          // Добавляем уникальный ключ для React
-          newProducts.push({
-            ...product,
-            id: `${product.id}-${i}`, // Уникальный ID для каждой копии
-            displayIndex: i
-          });
+          // Просто добавляем продукт (ключ зададим на уровне JSX)
+          newProducts.push(product);
         }
       }
       
@@ -56,7 +52,7 @@ export const InfiniteScrollProducts = ({ products }: InfiniteScrollProductsProps
   }, [products, page, loading, hasMore, displayedProducts.length]);
 
   // Реф для последнего элемента
-  const lastProductElementRef = useCallback((node: HTMLDivElement) => {
+  const lastProductElementRef = useCallback((node: HTMLDivElement | null) => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
     
@@ -99,7 +95,7 @@ export const InfiniteScrollProducts = ({ products }: InfiniteScrollProductsProps
           
           return (
             <motion.div
-              key={product.id}
+              key={`${product.id}-${index}`}
               ref={isLast ? lastProductElementRef : null}
               initial={{ 
                 opacity: 0, 

@@ -46,3 +46,5 @@ cd /workspaces/Labosfera/frontend
 
 Bash
 npm run dev
+
+rm -rf .next 

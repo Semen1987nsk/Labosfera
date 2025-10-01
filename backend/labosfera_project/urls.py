@@ -7,6 +7,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # Подключаем все URL'ы из нашего приложения catalog по префиксу api/v1/
     path('api/v1/', include('catalog.urls')),
+    # Подключаем URL'ы для заявок
+    path('api/v1/', include('orders.urls')),
 ]
 
 # Эта строка нужна, чтобы в режиме разработки (DEBUG=True)

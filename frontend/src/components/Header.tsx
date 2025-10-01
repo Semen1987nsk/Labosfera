@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/Button';
 import { MegaMenu } from '@/components/MegaMenu'; // Этот путь ВЕРНЫЙ
+import { CartIcon } from '@/components/ui/CartIcon';
 
 export const Header = () => {
   const handleContactClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -33,7 +34,8 @@ export const Header = () => {
           </Link>
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-4">
+          <CartIcon />
           <Button variant="secondary" onClick={handleContactClick}>
             Связаться с нами
           </Button>
