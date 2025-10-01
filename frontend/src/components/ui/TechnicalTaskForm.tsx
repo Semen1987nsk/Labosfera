@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/Button';
 
 export const TechnicalTaskForm = () => {
@@ -16,6 +17,8 @@ export const TechnicalTaskForm = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -77,18 +80,74 @@ export const TechnicalTaskForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      console.log('Форма отправлена:', formData);
-      // Здесь будет логика отправки формы
-      alert('Спасибо! Ваш запрос отправлен. Мы свяжемся с вами в течение 1-2 рабочих дней.');
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Подготавливаем данные для отправки
+      const contactData = {
+        name: formData.contactPerson,
+        phone: formData.phone,
+        email: formData.email,
+        organization: `Город: ${formData.city}`,
+        message: `Техническое задание\n\nОборудование: ${formData.equipment || 'Не указано'}`,
+        request_type: 'custom_order' // Тип обращения - заказ по техническому заданию
+      };
+
+      // Отправляем на сервер
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/contacts/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setIsSubmitted(true);
+        
+        // Сбрасываем форму через 5 секунд
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            contactPerson: '',
+            phone: '',
+            email: '',
+            city: '',
+            equipment: '',
+            file: null,
+            recaptcha: false,
+            agreement: false
+          });
+        }, 5000);
+      } else {
+        // Обрабатываем ошибки валидации от backend
+        if (result.errors) {
+          setErrors(result.errors);
+        } else {
+          throw new Error(result.message || 'Ошибка отправки заявки');
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка отправки заявки:', error);
+      alert('Произошла ошибка при отправке. Попробуйте еще раз.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit} className="space-y-6">
       {/* Контактное лицо */}
       <div>
         <label htmlFor="contactPerson" className="block text-sm font-medium mb-2">
@@ -246,10 +305,121 @@ export const TechnicalTaskForm = () => {
 
       {/* Кнопка отправки */}
       <div className="pt-4">
-        <Button type="submit" className="w-full">
-          Отправить запрос
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Отправляем...
+            </span>
+          ) : (
+            'Отправить запрос'
+          )}
         </Button>
       </div>
     </form>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative"
+        >
+          {/* Background gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-electric-blue/10 to-purple-500/10 rounded-3xl" />
+          
+          <div className="relative bg-deep-blue/50 backdrop-blur-sm border border-white/10 rounded-3xl p-8 text-center overflow-hidden">
+            {/* Animated background effects */}
+            <div className="absolute inset-0">
+              <motion.div 
+                className="absolute w-32 h-32 -top-16 -right-16 bg-electric-blue/20 rounded-full blur-2xl"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute w-24 h-24 -bottom-12 -left-12 bg-green-500/20 rounded-full blur-2xl"
+                animate={{
+                  scale: [1.1, 1, 1.1],
+                  opacity: [0.4, 0.7, 0.4],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            </div>
+
+            <div className="relative z-10">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="w-20 h-20 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/25"
+              >
+                <motion.svg 
+                  className="w-10 h-10 text-white" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                >
+                  <motion.path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M5 13l4 4L19 7"
+                  />
+                </motion.svg>
+              </motion.div>
+              
+              <motion.h3 
+                className="text-3xl font-bold mb-4 bg-gradient-to-r from-white to-light-grey bg-clip-text text-transparent"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                Запрос отправлен!
+              </motion.h3>
+              
+              <motion.p 
+                className="text-lg text-light-grey/80 leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                <span className="text-electric-blue font-semibold">Спасибо!</span> Ваш запрос на техническое задание получен.<br />
+                Мы свяжемся с вами в течение <span className="text-green-400 font-semibold">1-2 рабочих дней</span>.
+              </motion.p>
+
+              <motion.div
+                className="mt-6 p-4 bg-electric-blue/10 rounded-xl border border-electric-blue/20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <p className="text-sm text-electric-blue font-medium">
+                  💼 Ваш запрос обрабатывается нашими специалистами
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 };
