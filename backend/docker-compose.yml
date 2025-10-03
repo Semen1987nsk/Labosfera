@@ -14,30 +14,16 @@ services:
         condition: service_healthy
     environment:
       - PYTHONPATH=/app
-      # --- ДОБАВЛЕНЫ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ ---
-      - DJANGO_SECRET_KEY=ychy5uakxhxg1-n5oj2-j4-3oj-c-a8eht-4-3y7l-kjpbqc # Ваш сгенерированный ключ
-      - DJANGO_DEBUG=True
-      # ------------------------------------
-      - DB_NAME=labosfera_db
-      - DB_USER=labosfera_user
-      - DB_PASSWORD=Olimp_2025!
-      - DB_HOST=db
-      - DB_PORT=5432
-      # --- TELEGRAM НАСТРОЙКИ ---
-      - TELEGRAM_BOT_TOKEN=8355662949:AAGUHPivIaYcsJlyve3iEaoRdvuVvJhQQ8w
-      - TELEGRAM_CHAT_ID=300596362
 
   db:
     image: postgres:15-alpine
     container_name: labosfera_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_DB=labosfera_db
-      - POSTGRES_USER=labosfera_user
-      - POSTGRES_PASSWORD=Olimp_2025!
+    env_file:
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U labosfera_user -d labosfera_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5

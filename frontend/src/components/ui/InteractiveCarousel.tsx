@@ -2,18 +2,19 @@
 
 import { ProductCard } from './ProductCard';
 import { Product } from '@/lib/api';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface InteractiveCarouselProps {
   products: Product[];
 }
 
 export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [cardsToShow, setCardsToShow] = useState(3);
+  const [isHovered, setIsHovered] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  // Без лишних логов
 
   // Адаптивное количество карточек
   useEffect(() => {
@@ -29,160 +30,196 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
     return () => window.removeEventListener('resize', updateCardsToShow);
   }, []);
 
-  const totalSlides = Math.max(0, products.length - cardsToShow + 1);
-  const maxIndex = totalSlides - 1;
-
-  const nextSlide = () => {
-    setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex(prev => (prev <= 0 ? maxIndex : prev - 1));
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(Math.min(Math.max(0, index), maxIndex));
-  };
-
   if (products.length === 0) {
     return (
       <div className="text-center py-20">
         <p className="text-light-grey/70">Продукты не найдены</p>
+        <p className="text-light-grey/50 text-sm mt-2">Проверьте подключение к API</p>
       </div>
     );
   }
 
+  // Создаем группы товаров для слайдов
+  const slides = [];
+  for (let i = 0; i < products.length; i += cardsToShow) {
+    slides.push(products.slice(i, i + cardsToShow));
+  }
+  // ...
+
+  const totalSlides = slides.length;
+
+  // Гарантируем, что индекс текущего слайда не выходит за пределы при ресайзе
+  useEffect(() => {
+    if (currentSlide >= totalSlides) {
+      setCurrentSlide(Math.max(0, totalSlides - 1));
+    }
+  }, [totalSlides]);
+
+  const nextSlide = () => {
+    setCurrentSlide(prev => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide(prev => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  // Автопрокрутка со стопом на hover/невидимости и уважением reduce-motion
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (media.matches) return; // не крутим, если пользователь просит меньше анимаций
+    if (isHovered || totalSlides <= 1) return; // пауза при наведении или если один слайд
+
+    const id = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % totalSlides);
+    }, 5500);
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        clearInterval(id);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [isHovered, totalSlides]);
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={(e) => { setTouchStartX(e.touches[0].clientX); setTouchEndX(null); }}
+      onTouchMove={(e) => setTouchEndX(e.touches[0].clientX)}
+      onTouchEnd={() => {
+        if (touchStartX !== null && touchEndX !== null) {
+          const delta = touchStartX - touchEndX;
+          if (Math.abs(delta) > 40) {
+            delta > 0 ? nextSlide() : prevSlide();
+          }
+        }
+        setTouchStartX(null);
+        setTouchEndX(null);
+      }}
+      tabIndex={0}
+      role="region"
+      aria-label="Карусель товаров"
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+      }}
+    >
       {/* Основная карусель */}
-      <div className="relative overflow-hidden rounded-2xl">
-        <motion.div
-          ref={carouselRef}
-          className="flex cursor-grab active:cursor-grabbing"
-          drag="x"
-          dragConstraints={{
-            left: -(maxIndex * 100),
-            right: 0,
-          }}
-          dragElastic={0.1}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={(_, info) => {
-            setIsDragging(false);
-            const offset = info.offset.x;
-            const velocity = info.velocity.x;
-            
-            if (Math.abs(offset) > 100 || Math.abs(velocity) > 500) {
-              if (offset > 0 || velocity > 500) {
-                prevSlide();
-              } else {
-                nextSlide();
-              }
-            }
-          }}
-          animate={{
-            x: `${-currentIndex * (100 / cardsToShow)}%`,
-          }}
-          transition={{
-            type: "spring",
-            damping: 20,
-            stiffness: 300,
-          }}
-          style={{
-            width: `${(products.length / cardsToShow) * 100}%`,
+      <div className="relative overflow-hidden rounded-2xl min-h-[480px] border border-white/10 shadow-xl shadow-black/20">
+        {/* Декоративный фон */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-electric-blue/10 blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-purple-500/10 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]" />
+          <div className="absolute inset-0 bg-dark-blue/40 backdrop-blur-sm" />
+          <div className="shimmer-light" />
+        </div>
+        {/* Контейнер слайдов */}
+        <div 
+          className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+          style={{ 
+            transform: `translateX(-${(currentSlide * 100) / totalSlides}%)`,
+            width: `${totalSlides * 100}%`
           }}
         >
-          {products.map((product, index) => (
-            <motion.div
-              key={product.id}
-              className="flex-shrink-0 px-3"
-              style={{ width: `${100 / products.length}%` }}
-              whileHover={!isDragging ? { y: -8 } : {}}
-              transition={{ duration: 0.2 }}
+          {slides.map((slideProducts, slideIndex) => (
+            <div 
+              key={slideIndex}
+              className={`w-full flex-shrink-0 p-6 sm:p-8 flex items-stretch justify-center transition-transform duration-500 ${
+                currentSlide === slideIndex ? 'scale-[1.01] shadow-xl shadow-black/20' : 'scale-[0.995] shadow-none'
+              }`}
+              style={{ width: `${100 / totalSlides}%` }}
             >
-              <ProductCard product={product} />
-            </motion.div>
+              {/* Простая сетка товаров */}
+              <div 
+                className="grid gap-6 w-full max-w-7xl mx-auto content-stretch" 
+                style={{ 
+                  gridTemplateColumns: `repeat(${Math.min(cardsToShow, slideProducts.length)}, 1fr)` 
+                }}
+              >
+                {slideProducts.map((product) => (
+                  <div key={product.id} className="w-full">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Если нет товаров в слайде - показываем заглушку */}
+              {slideProducts.length === 0 && (
+                <div className="text-center text-gray-500">
+                  <p>Нет товаров в этом слайде</p>
+                </div>
+              )}
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Кнопки навигации */}
         {totalSlides > 1 && (
           <>
-            <motion.button
+            <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-dark-blue/80 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-electric-blue/80 transition-all duration-300 z-10"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
+              className="group absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full grid place-items-center z-10 transition-transform duration-300 hover:-translate-x-0.5 active:scale-95"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span className="absolute inset-0 rounded-full bg-black/30 backdrop-blur-sm border border-white/15 transition-colors group-hover:bg-black/45" />
+              <span className="absolute -inset-1 rounded-full bg-electric-blue/0 blur-lg transition-opacity opacity-0 group-hover:opacity-60" />
+              <svg className="relative w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </motion.button>
+            </button>
 
-            <motion.button
+            <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-dark-blue/80 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-electric-blue/80 transition-all duration-300 z-10"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
+              className="group absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full grid place-items-center z-10 transition-transform duration-300 hover:translate-x-0.5 active:scale-95"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span className="absolute inset-0 rounded-full bg-black/30 backdrop-blur-sm border border-white/15 transition-colors group-hover:bg-black/45" />
+              <span className="absolute -inset-1 rounded-full bg-electric-blue/0 blur-lg transition-opacity opacity-0 group-hover:opacity-60" />
+              <svg className="relative w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </motion.button>
+            </button>
           </>
         )}
       </div>
 
       {/* Индикаторы точек */}
       {totalSlides > 1 && (
-        <motion.div 
-          className="flex justify-center mt-8 space-x-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          {Array.from({ length: totalSlides }).map((_, index) => (
-            <motion.button
+        <div className="flex justify-center mt-8 gap-2">
+          {slides.map((_, index) => (
+            <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                currentIndex === index
-                  ? 'bg-electric-blue shadow-lg shadow-electric-blue/50'
-                  : 'bg-white/30 hover:bg-white/50'
+              className={`h-2 rounded-full transition-all duration-500 ease-out ${
+                currentSlide === index
+                  ? 'w-7 bg-electric-blue shadow-[0_0_12px_rgba(56,189,248,0.5)]'
+                  : 'w-2 bg-white/30 hover:bg-white/50'
               }`}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.8 }}
+              aria-label={`Перейти к слайду ${index + 1}`}
             />
           ))}
-        </motion.div>
+        </div>
       )}
 
       {/* Счетчик слайдов */}
-      <motion.div 
-        className="absolute top-4 right-4 bg-dark-blue/80 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium border border-white/20"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1 }}
-      >
-        {currentIndex + 1} / {totalSlides}
-      </motion.div>
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-black/35 backdrop-blur-sm text-white px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium border border-white/10">
+        {currentSlide + 1} / {totalSlides}
+      </div>
 
       {/* Подсказка для пользователя */}
-      <motion.div 
-        className="text-center mt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        <p className="text-light-grey/60 text-sm">
-          💡 Используйте кнопки, точки или перетаскивайте мышью
-        </p>
-      </motion.div>
+      <div className="text-center mt-4">
+        <p className="text-light-grey/60 text-sm">💡 Используйте кнопки или точки для навигации</p>
+      </div>
     </div>
   );
 };

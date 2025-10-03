@@ -2,6 +2,7 @@
 
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/Button";
+import { ImageGallery } from "@/components/ui/ImageGallery";
 import Image from "next/image";
 import Link from "next/link";
 import { api, Product } from "@/lib/api";
@@ -14,9 +15,8 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://humble-winner-97
 // export async function generateStaticParams() { ... }
 
 export default function ProductDetailPage({ params }: { params: { slug: string } }) {
-  // Состояния для хранения данных, выбранной картинки и статуса загрузки
+  // Состояния для хранения данных и статуса загрузки
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { addItem } = useCart();
 
@@ -31,10 +31,6 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         
         if (productData) {
           setProduct(productData);
-          if (productData.images && productData.images.length > 0) {
-            const mainImage = productData.images.find(img => img.is_main) || productData.images[0];
-            setSelectedImage(mainImage.image);
-          }
         } else {
           console.error('Product not found or API error');
         }
@@ -66,11 +62,6 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     );
   }
 
-  // Формируем полный URL для главного (выбранного) изображения
-  const fullSelectedImageUrl = selectedImage
-    ? (selectedImage.startsWith('/') ? `${BACKEND_URL}${selectedImage}` : selectedImage)
-    : null;
-
   return (
     <div className="bg-dark-blue py-12 md:py-20">
       <Container>
@@ -84,30 +75,11 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
           {/* Левая колонка: Галерея */}
           <div>
-            <div className="relative aspect-square bg-deep-blue rounded-lg">
-              {fullSelectedImageUrl ? (
-                <Image src={fullSelectedImageUrl} alt={product.name} fill style={{ objectFit: 'contain' }} className="p-8" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center"><span className="text-light-grey/50">Нет изображения</span></div>
-              )}
-            </div>
-            {/* Миниатюры */}
-            {product.images && product.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-5 gap-4">
-                {product.images.map(img => {
-                  const thumbUrl = img.image.startsWith('/') ? `${BACKEND_URL}${img.image}` : img.image;
-                  return (
-                    <button 
-                      key={img.id} 
-                      onClick={() => setSelectedImage(img.image)} 
-                      className={`relative aspect-square rounded-md overflow-hidden ring-2 transition-all ${selectedImage === img.image ? 'ring-electric-blue' : 'ring-transparent hover:ring-electric-blue/50'}`}
-                    >
-                      <Image src={thumbUrl} alt="thumbnail" fill style={{ objectFit: 'cover' }} />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            <ImageGallery 
+              images={product.images || []}
+              productName={product.name}
+              backendUrl={BACKEND_URL}
+            />
           </div>
 
           {/* Правая колонка: Информация */}

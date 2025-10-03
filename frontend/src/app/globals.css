@@ -30,6 +30,29 @@
   .pause-marquee {
     animation-play-state: paused;
   }
+
+  /* Улучшенные утилиты для текста на карточках */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Балансировка строк заголовка (где поддерживается) */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Мягкие переносы и дефисы для длинных русских заголовков */
+  .hyphens-auto {
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
 }
 
 @keyframes float {
@@ -85,5 +108,30 @@
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+/* Shimmer эффекты для фоновой подсветки */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer-light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0) 100%);
+  transform: translateX(-100%);
+  animation: shimmer 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-light {
+    animation: none;
   }
 }

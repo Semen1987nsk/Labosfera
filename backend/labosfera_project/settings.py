@@ -8,8 +8,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-temporary-defa
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 # --- БЕЗОПАСНОСТЬ: Указываем конкретные хосты ---
-# Используйте ваш актуальный URL от Codespace
-ALLOWED_HOSTS = ['humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,6 +19,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'django_filters',
+    'ckeditor',
+    'ckeditor_uploader',
     'catalog.apps.CatalogConfig',
     'orders.apps.OrdersConfig',
 ]
@@ -154,9 +156,93 @@ TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '')
 
 # ==============================================================================
-# НАСТРОЙКИ ЗАГРУЗКИ ФАЙЛОВ
+# НАСТРОЙКИ CKEDITOR
 # ==============================================================================
-# Устанавливаем максимальный размер загружаемого файла в 20 МБ (20 * 1024 * 1024 байт)
-# Это должно быть равно или меньше значения client_max_body_size в nginx.conf
-FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520
-DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = "pillow"
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+
+# ==============================================================================
+# LOGGING CONFIGURATION
+# ==============================================================================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'catalog': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+        'orders': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Strike'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source'],
+            ['Styles', 'Format', 'Font', 'FontSize'],
+            ['TextColor', 'BGColor'],
+            ['Table', 'HorizontalRule'],
+            ['Image', 'Flash', 'Embed'],
+            ['Maximize'],
+        ],
+        'height': 400,
+        'width': '100%',
+        'filebrowserWindowWidth': 940,
+        'filebrowserWindowHeight': 725,
+    },
+    'product_description': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+            ['Link', 'Unlink'],
+            ['Table', 'HorizontalRule'],
+            ['TextColor', 'BGColor'],
+            ['RemoveFormat', 'Source'],
+        ],
+        'height': 300,
+        'width': '100%',
+        'removePlugins': 'elementspath',
+        'resize_enabled': False,
+    }
+}

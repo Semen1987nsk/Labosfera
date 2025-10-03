@@ -100,8 +100,9 @@ class ApiClient {
     return response ? response.results : null;
   }
 
-  public async getProducts(): Promise<Product[] | null> {
-    const response = await this.request<PaginatedResponse<Product>>('/api/v1/products/');
+  public async getProducts(sortBy?: string): Promise<Product[] | null> {
+    const params = sortBy ? `?ordering=${sortBy}` : '';
+    const response = await this.request<PaginatedResponse<Product>>(`/api/v1/products/${params}`);
     return response ? response.results : null;
   }
   
@@ -110,9 +111,7 @@ class ApiClient {
   }
   
   public async getProductDetail(slug: string): Promise<Product | null> {
-    console.log('Fetching product details for slug:', slug);
     const response = await this.request<Product>(`/api/v1/products/${slug}/`);
-    console.log('API response:', response);
     return response;
   }
 

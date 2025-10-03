@@ -39,8 +39,9 @@ def create_order(request):
         # Отправляем уведомления
         try:
             send_order_notification(order)
+            logger.info(f"Order notification sent for order #{order.id}")
         except Exception as e:
-            print(f"Ошибка отправки уведомления о заказе: {e}")
+            logger.error(f"Error sending order notification #{order.id}: {e}", exc_info=True)
         
         return Response({
             'success': True,
@@ -53,17 +54,19 @@ def create_order(request):
         'errors': serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
 
+import logging
+logger = logging.getLogger(__name__)
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_contact_request(request):
     """Создание обращения через форму обратной связи"""
-    print(f"📨 Получен запрос на создание обращения:")
-    print(f"    Данные: {request.data}")
+    logger.info(f"Received contact request with data: {request.data}")
     
     serializer = ContactRequestCreateSerializer(data=request.data)
     
     if serializer.is_valid():
-        print(f"✅ Валидация прошла успешно")
+        logger.info("Contact request validation successful")
         # Получаем информацию о клиенте
         ip_address, user_agent = get_client_info(request)
         
@@ -73,17 +76,14 @@ def create_contact_request(request):
         contact.user_agent = user_agent
         contact.save()
         
-        print(f"💾 Обращение #{contact.id} создано")
+        logger.info(f"Contact request #{contact.id} created successfully")
         
         # Отправляем уведомления
-        print(f"🚀 Попытка отправить Telegram уведомление для обращения #{contact.id}")
         try:
             send_contact_notification(contact)
-            print(f"✅ Telegram уведомление отправлено успешно для #{contact.id}")
+            logger.info(f"Telegram notification sent for contact #{contact.id}")
         except Exception as e:
-            print(f"❌ Ошибка отправки уведомления об обращении: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Error sending notification for contact #{contact.id}: {e}", exc_info=True)
         
         return Response({
             'success': True,
@@ -91,7 +91,7 @@ def create_contact_request(request):
             'request_id': contact.id
         }, status=status.HTTP_201_CREATED)
     else:
-        print(f"❌ Ошибки валидации: {serializer.errors}")
+        logger.warning(f"Contact request validation failed: {serializer.errors}")
     
     return Response({
         'success': False,

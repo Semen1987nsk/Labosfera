@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # CKEditor URLs
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     # Подключаем все URL'ы из нашего приложения catalog по префиксу api/v1/
     path('api/v1/', include('catalog.urls')),
     # Подключаем URL'ы для заявок
