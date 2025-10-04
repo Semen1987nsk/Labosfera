@@ -30,12 +30,28 @@ ssh root@ВАШ_IP_СЕРВЕРА
 
 # Пример:
 ssh root@45.67.89.123
+
+# Если у вас обычный пользователь (не root), переключитесь на root:
+sudo su -
 ```
 
 ## 3️⃣ Автоматическое развертывание (ОДНА КОМАНДА!)
 
 ```bash
 # Скачиваем и запускаем скрипт автоматического развертывания
+curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh -o deploy.sh && chmod +x deploy.sh && ./deploy.sh
+
+# Альтернативный способ (если проблемы с правами):
+sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash'
+```
+
+### ⚠️ Если видите ошибку "Скрипт должен запускаться под root":
+
+```bash
+# Переключитесь на root:
+sudo su -
+
+# Запустите команду заново:
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh -o deploy.sh && chmod +x deploy.sh && ./deploy.sh
 ```
 
@@ -154,10 +170,23 @@ docker-compose -f docker-compose.prod.yml restart nginx
 
 ## 🎯 Полная команда для копирования:
 
-**Подключитесь к серверу и выполните:**
+**Если у вас root доступ:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh -o deploy.sh && chmod +x deploy.sh && ./deploy.sh
+```
+
+**Если у вас обычный пользователь:**
+
+```bash
+# Переключитесь на root:
+sudo su -
+
+# Затем запустите:
+curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh -o deploy.sh && chmod +x deploy.sh && ./deploy.sh
+
+# Или одной командой:
+sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash'
 ```
 
 **Время развертывания**: 10-15 минут (в зависимости от скорости интернета)

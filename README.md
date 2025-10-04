@@ -11,8 +11,14 @@
 
 ### Автоматическое развертывание (рекомендуется)
 ```bash
-# На вашем production сервере
+# Подключение к VPS как root (или sudo su -)
+ssh root@YOUR_SERVER_IP
+
+# Автоматическое развертывание одной командой
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash
+
+# Если ошибка с правами root:
+sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash'
 ```
 
 ### Проверка готовности

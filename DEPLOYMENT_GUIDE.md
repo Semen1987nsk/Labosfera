@@ -20,10 +20,16 @@ A    www           YOUR_SERVER_IP
 # Подключение к серверу
 ssh root@YOUR_SERVER_IP
 
+# Если у вас обычный пользователь, переключитесь на root:
+sudo su -
+
 # Скачивание и запуск скрипта
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh -o deploy.sh
 chmod +x deploy.sh
 ./deploy.sh
+
+# Альтернативный способ одной командой:
+sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash'
 ```
 
 ## ⚙️ Ручная настройка
