@@ -9,16 +9,22 @@
 
 ## 🚀 Быстрый старт для production
 
-### Автоматическое развертывание (рекомендуется)
+### VPS с правами root
 ```bash
 # Подключение к VPS как root (или sudo su -)
 ssh root@YOUR_SERVER_IP
 
 # Автоматическое развертывание одной командой
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash
+```
 
-# Если ошибка с правами root:
-sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash'
+### Виртуальный хостинг (без sudo)
+```bash
+# Подключение к хостингу REG.RU
+ssh u3283831@server293.hosting.reg.ru
+
+# Развертывание для виртуального хостинга
+curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy-hosting.sh | bash
 ```
 
 ### Проверка готовности
@@ -26,8 +32,9 @@ sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfer
 ./check-deployment.sh
 ```
 
-### Ручное развертывание
-Смотрите [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
+### Руководства по развертыванию
+- **VPS**: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) и [QUICK_START_VPS.md](QUICK_START_VPS.md)
+- **Хостинг**: [HOSTING_GUIDE.md](HOSTING_GUIDE.md)
 
 ## 🏗️ Архитектура
 
