@@ -78,19 +78,35 @@ fi
 
 source venv/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+
+# Сначала пробуем основной requirements.txt
+echo "Пробуем установить зависимости..."
+if pip install -r requirements.txt; then
+    success "Основные зависимости установлены"
+else
+    warning "Основные зависимости не установились, пробуем совместимые версии..."
+    if [ -f "requirements_hosting.txt" ]; then
+        pip install -r requirements_hosting.txt
+        success "Совместимые зависимости для хостинга установлены"
+    else
+        # Создаем минимальный набор зависимостей
+        warning "Устанавливаем минимальный набор зависимостей..."
+        pip install "django>=3.2,<3.3" "djangorestframework>=3.12,<3.15" "django-cors-headers>=3.10,<4.0" "Pillow>=8.0,<11.0" "requests>=2.25,<3.0" "python-dotenv>=0.19,<2.0"
+        success "Минимальные зависимости установлены"
+    fi
+fi
 success "Python зависимости установлены"
 
 # Настройка переменных окружения для хостинга
 echo "⚙️  Настраиваем окружение для хостинга..."
 if [ ! -f ".env" ]; then
     cat > .env << EOF
-# Настройки для виртуального хостинга
+# Настройки для виртуального хостинга (совместимые)
 DEBUG=False
-SECRET_KEY=django-insecure-for-hosting-change-this-key-$(date +%s)
+SECRET_KEY=django-hosting-key-$(date +%s)-$(whoami)
 ALLOWED_HOSTS=*.reg.ru,labosfera.ru,www.labosfera.ru
 
-# База данных SQLite (для хостинга)
+# База данных SQLite (универсальная)
 DATABASE_URL=sqlite:///$(pwd)/db.sqlite3
 
 # Статические файлы
@@ -99,24 +115,30 @@ STATIC_ROOT=$(pwd)/staticfiles/
 MEDIA_URL=/media/
 MEDIA_ROOT=$(pwd)/media/
 
-# Email настройки
+# Email настройки для REG.RU
 EMAIL_HOST=smtp.reg.ru
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER=noreply@labosfera.ru
 EMAIL_HOST_PASSWORD=your_email_password
+DEFAULT_FROM_EMAIL=noreply@labosfera.ru
+
+# Настройки Django
+DJANGO_SETTINGS_MODULE=labosfera_project.settings_hosting_compat
 EOF
-    success "Файл .env создан"
+    success "Файл .env создан с совместимыми настройками"
     warning "ВАЖНО: Отредактируйте .env файл с вашими настройками"
 fi
 
-# Применение миграций
+# Применение миграций с совместимыми настройками
 echo "🗄️  Применяем миграции..."
+export DJANGO_SETTINGS_MODULE=labosfera_project.settings_hosting_compat
 python manage.py migrate
 success "Миграции применены"
 
 # Создание суперпользователя
 echo "👤 Создание администратора..."
+export DJANGO_SETTINGS_MODULE=labosfera_project.settings_hosting_compat
 python manage.py shell << EOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -129,7 +151,7 @@ EOF
 
 # Сбор статических файлов
 echo "📦 Собираем статические файлы..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --settings=labosfera_project.settings_hosting_compat
 success "Статические файлы собраны"
 
 # Настройка frontend
@@ -217,6 +239,7 @@ cat > start.sh << 'EOF'
 #!/bin/bash
 cd backend
 source venv/bin/activate
+export DJANGO_SETTINGS_MODULE=labosfera_project.settings_hosting_compat
 python manage.py runserver 0.0.0.0:8000
 EOF
 chmod +x start.sh
