@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ProductCard } from '@/components/ui/ProductCard';
+import { ProductGridSkeleton } from '@/components/ui/SkeletonCard';
 import { api } from '@/lib/api';
 import type { Product, Category } from '@/lib/api';
 
@@ -41,9 +42,16 @@ export default function CatalogPage() {
     return (
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-8 text-center">Каталог оборудования</h1>
-        <div className="flex justify-center items-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue"></div>
+        
+        <h2 className="text-2xl font-semibold mb-6">Категории</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-16">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white/5 h-16 rounded-lg animate-pulse" />
+          ))}
         </div>
+
+        <h2 className="text-2xl font-semibold mb-6">Все товары</h2>
+        <ProductGridSkeleton count={8} />
       </div>
     );
   }

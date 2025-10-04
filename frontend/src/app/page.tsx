@@ -10,6 +10,9 @@ import { api } from '@/lib/api';
 import { AnimatedSection } from '@/components/ui/AnimatedSection';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { AnimatedBackground } from '@/components/ui/AnimatedBackground';
+import { StatsGrid } from '@/components/ui/StatCounter';
+import { RippleButton } from '@/components/ui/RippleButton';
+import { ScrollIndicator } from '@/components/ui/ScrollIndicator';
 
 // --- Иконки для блока "Производство" ---
 const WrenchIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -54,11 +57,30 @@ export default async function HomePage() {
             Поставляем оборудование для ОГЭ по физике/химии в полном соответствии ФИПИ. Собственное производство и прямая заводская гарантия.
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/catalog"><Button>Смотреть продукцию</Button></Link>
-            <Link href="/production"><Button variant="secondary">О производстве</Button></Link>
+            <Link href="/catalog">
+              <RippleButton variant="primary">Смотреть продукцию</RippleButton>
+            </Link>
+            <Link href="/production">
+              <RippleButton variant="secondary">О производстве</RippleButton>
+            </Link>
           </div>
         </Container>
+        <ScrollIndicator />
       </div>
+
+      {/* === Блок 1.5: Статистика (Animated Counters) === */}
+      <AnimatedSection className="py-12 bg-gradient-to-b from-deep-blue to-dark-blue">
+        <Container>
+          <StatsGrid
+            stats={[
+              { end: 150, suffix: '+', label: 'Школ-партнеров' },
+              { end: 15, suffix: ' лет', label: 'На рынке' },
+              { end: 50, suffix: '+', label: 'Регионов РФ' },
+              { end: 99, suffix: '%', label: 'Довольных клиентов' },
+            ]}
+          />
+        </Container>
+      </AnimatedSection>
 
       {/* === Блок 2: Наше производство (Bento Grid + Spotlight) === */}
       <AnimatedSection className="py-20 bg-dark-blue relative overflow-hidden">
