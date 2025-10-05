@@ -11,10 +11,19 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+echo -e "${YELLOW}Шаг 0: Проверка Docker Compose${NC}"
+if ! command -v docker &> /dev/null; then
+    echo -e "${RED}Docker не установлен!${NC}"
+    exit 1
+fi
+
+# Используем docker compose (встроенный в Docker) вместо docker-compose
+COMPOSE_CMD="docker compose"
+
 echo -e "${YELLOW}Шаг 1: Остановка и удаление всех контейнеров${NC}"
-docker-compose -f docker-compose.timeweb.yml down -v 2>/dev/null || true
-docker-compose -f docker-compose.simple.yml down -v 2>/dev/null || true
-docker-compose down -v 2>/dev/null || true
+$COMPOSE_CMD -f docker-compose.timeweb.yml down -v 2>/dev/null || true
+$COMPOSE_CMD -f docker-compose.simple.yml down -v 2>/dev/null || true
+$COMPOSE_CMD down -v 2>/dev/null || true
 
 echo -e "${YELLOW}Шаг 2: Удаление всех образов Labosfera${NC}"
 docker images | grep labosfera | awk '{print $3}' | xargs -r docker rmi -f
@@ -61,10 +70,10 @@ echo -e "${YELLOW}Шаг 9: Создание директорий для дан�
 mkdir -p postgres_data media staticfiles logs
 
 echo -e "${YELLOW}Шаг 10: Сборка Docker образов${NC}"
-docker-compose -f docker-compose.simple.yml build --no-cache
+$COMPOSE_CMD -f docker-compose.simple.yml build --no-cache
 
 echo -e "${YELLOW}Шаг 11: Запуск контейнеров${NC}"
-docker-compose -f docker-compose.simple.yml up -d
+$COMPOSE_CMD -f docker-compose.simple.yml up -d
 
 echo ""
 echo -e "${GREEN}======================================"
@@ -72,13 +81,13 @@ echo "РАЗВЕРТЫВАНИЕ ЗАВЕРШЕНО!"
 echo "======================================${NC}"
 echo ""
 echo "Проверьте статус контейнеров:"
-echo "  docker-compose -f docker-compose.simple.yml ps"
+echo "  docker compose -f docker-compose.simple.yml ps"
 echo ""
 echo "Просмотр логов:"
-echo "  docker-compose -f docker-compose.simple.yml logs -f"
+echo "  docker compose -f docker-compose.simple.yml logs -f"
 echo ""
 echo "Проверка backend:"
-echo "  docker-compose -f docker-compose.simple.yml logs backend"
+echo "  docker compose -f docker-compose.simple.yml logs backend"
 echo ""
 echo "Сайт должен быть доступен по адресу: http://labosfera.ru"
 echo ""
