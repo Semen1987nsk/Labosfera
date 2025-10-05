@@ -33,8 +33,9 @@ services:
     networks:
       - backend-network
     
-    ports:
-      - "127.0.0.1:5432:5432"
+    # Порт PostgreSQL не пробрасываем наружу - доступен только внутри Docker сети
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labosfera} -d ${POSTGRES_DB:-labosfera}"]
