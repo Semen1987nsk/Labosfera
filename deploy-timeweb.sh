@@ -380,7 +380,6 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=ru_RU.UTF-8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - labosfera_network
     healthcheck:
