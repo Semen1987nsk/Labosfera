@@ -116,7 +116,7 @@ log() {
 
 # Ожидание базы данных
 log "⏳ Ожидание подключения к PostgreSQL..."
-while ! pg_isready -h db -p 5432 -U ${POSTGRES_USER:-labosfera} -d ${POSTGRES_DB:-labosfera} > /dev/null 2>&1; do
+until python -c "import psycopg2; psycopg2.connect('$DATABASE_URL')" 2>/dev/null; do
     sleep 1
 done
 log "✅ PostgreSQL готов к работе"
