@@ -23,13 +23,13 @@ echo "Перезапуск Docker..."
 systemctl restart docker
 sleep 5
 
-# Удаление образов Labosfera
+# Удаление образов Labosfera (но не базовых типа postgres, nginx)
 echo "Удаление образов Labosfera..."
 docker images | grep labosfera | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
 
-# Очистка системы
-echo "Очистка Docker системы..."
-docker system prune -af --volumes
+# Очистка только неиспользуемых ресурсов (БЕЗ удаления всех образов)
+echo "Очистка неиспользуемых ресурсов Docker..."
+docker system prune -f --volumes
 
 # Проверка портов
 echo "Проверка занятых портов..."
