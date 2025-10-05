@@ -49,7 +49,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.timeweb
+      dockerfile: Dockerfile.simple
     container_name: labosfera_backend
     restart: unless-stopped
     
