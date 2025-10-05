@@ -75,8 +75,7 @@ FROM base as development
 RUN pip install \
     django-debug-toolbar \
     django-extensions \
-    ipython \
-    && pip cache purge
+    ipython
 
 # Копирование кода
 COPY --chown=django:django . .
@@ -97,8 +96,7 @@ RUN pip install \
     gunicorn[gevent]==21.2.0 \
     gevent==23.9.1 \
     psycopg2-binary==2.9.9 \
-    whitenoise==6.6.0 \
-    && pip cache purge
+    whitenoise==6.6.0
 
 # Копирование кода приложения
 COPY --chown=django:django . .
