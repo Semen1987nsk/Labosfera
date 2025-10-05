@@ -4,7 +4,26 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- БЕЗОПАСНОСТЬ: Ключ и режим отладки читаются из переменных окружения ---
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-temporary-default-key-for-dev')
+from pathlib import Path
+from decouple import config
+import dj_database_url
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS_str = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_str.split(',')]
+
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
 # --- БЕЗОПАСНОСТЬ: Указываем конкретные хосты ---
@@ -58,16 +77,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'labosfera_project.wsgi.application'
 
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
