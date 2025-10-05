@@ -90,6 +90,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Настройки для HTTPS ---
+# Включаем, если работаем за прокси с SSL
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True  # Редирект всех HTTP запросов на HTTPS
+SESSION_COOKIE_SECURE = True  # Отправлять cookie только через HTTPS
+CSRF_COOKIE_SECURE = True  # Отправлять CSRF cookie только через HTTPS
+
 # ==============================================================================
 # НАСТРОЙКИ CORS и CSRF
 # ==============================================================================
