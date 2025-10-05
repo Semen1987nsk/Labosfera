@@ -172,6 +172,8 @@ else
 fi
 
 # 6. Оптимизация Docker для Timeweb Cloud
+systemctl restart docker
+
 step "Оптимизация Docker для Timeweb Cloud..."
 mkdir -p /etc/docker
 
@@ -179,26 +181,9 @@ cat > /etc/docker/daemon.json << 'EOF'
 {
   "log-driver": "json-file",
   "log-opts": {
-    "max-size": "50m",
+    "max-size": "10m",
     "max-file": "3"
-  },
-  "storage-driver": "overlay2",
-  "storage-opts": [
-    "overlay2.override_kernel_check=true"
-  ],
-  "default-ulimits": {
-    "nofile": {
-      "Name": "nofile",
-      "Hard": 65535,
-      "Soft": 65535
-    }
-  },
-  "live-restore": true,
-  "userland-proxy": false,
-  "experimental": false,
-  "metrics-addr": "127.0.0.1:9323",
-  "max-concurrent-downloads": 10,
-  "max-concurrent-uploads": 5
+  }
 }
 EOF
 
