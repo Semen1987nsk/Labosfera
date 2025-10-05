@@ -45,6 +45,13 @@ echo -e "${YELLOW}Шаг 7: Клонирование свежей версии �
 git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
 
+echo -e "${YELLOW}Шаг 7.5: Вход в Docker Hub (для избежания rate limit)${NC}"
+echo "Если у вас есть аккаунт Docker Hub, введите логин. Или нажмите Enter для продолжения без логина."
+read -p "Docker Hub username (или Enter для пропуска): " DOCKER_USER
+if [ ! -z "$DOCKER_USER" ]; then
+    docker login -u "$DOCKER_USER"
+fi
+
 echo -e "${YELLOW}Шаг 8: Создание .env файла${NC}"
 cat > .env << 'EOF'
 DEBUG=False

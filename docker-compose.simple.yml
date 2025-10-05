@@ -3,8 +3,6 @@
 # БЕЗ Let's Encrypt (для использования с внешним SSL)
 # ==========================================
 
-version: '3.8'
-
 networks:
   frontend-network:
     driver: bridge
