@@ -64,8 +64,7 @@ WORKDIR /app
 # Копирование requirements и установка зависимостей
 COPY requirements.txt requirements_hosting.txt ./
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install -r requirements_hosting.txt \
-    && pip cache purge
+    && pip install -r requirements_hosting.txt
 
 # ==========================================
 # СТАДИЯ РАЗРАБОТКИ
