@@ -23,18 +23,19 @@ DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Настройки безопасности для HTTPS
-SECURE_SSL_REDIRECT = True
+# ВРЕМЕННО ОТКЛЮЧЕНО для HTTP (включить после настройки SSL)
+SECURE_SSL_REDIRECT = False  # Включить когда будет HTTPS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_HSTS_SECONDS = 31536000  # 1 год
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_SECONDS = 0  # Отключено для HTTP
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
-# Безопасные cookies
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Безопасные cookies (отключено для HTTP)
+SESSION_COOKIE_SECURE = False  # Включить когда будет HTTPS
+CSRF_COOKIE_SECURE = False  # Включить когда будет HTTPS
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
