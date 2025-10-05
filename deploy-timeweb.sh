@@ -1104,6 +1104,7 @@ def health_check(request):
 EOF
 
 # Frontend health check
+mkdir -p "$PROJECT_DIR/frontend/pages/api"
 cat > "$PROJECT_DIR/frontend/pages/api/health.js" << 'EOF'
 export default function handler(req, res) {
   const startTime = Date.now();
