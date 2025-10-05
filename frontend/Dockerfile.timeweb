@@ -1,0 +1,347 @@
+# ==========================================
+# ЛАБОСФЕРА - Dockerfile для Next.js Frontend
+# Оптимизирован для Timeweb Cloud Ubuntu 24.04 LTS
+# ==========================================
+
+# Используем официальный Node.js образ с Alpine
+FROM node:20-alpine as base
+
+# Метаданные
+LABEL maintainer="ЛАБОСФЕРА <admin@labosfera.ru>"
+LABEL description="Next.js Frontend для интернет-магазина лабораторного оборудования"
+LABEL version="1.0"
+LABEL optimized-for="Timeweb Cloud Ubuntu 24.04 LTS"
+
+# Установка системных зависимостей
+RUN apk add --no-cache \
+    libc6-compat \
+    curl \
+    bash \
+    git
+
+# Переменные окружения для оптимизации Node.js
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NPM_CONFIG_CACHE=/tmp/.npm \
+    YARN_CACHE_FOLDER=/tmp/.yarn
+
+# Создание пользователя приложения (безопасность)
+RUN addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+
+# Создание рабочей директории
+WORKDIR /app
+
+# ==========================================
+# СТАДИЯ ЗАВИСИМОСТЕЙ
+# ==========================================
+FROM base as deps
+
+# Копирование файлов зависимостей
+COPY package*.json ./
+COPY yarn.lock* ./
+
+# Установка зависимостей с оптимизацией для Timeweb Cloud
+RUN if [ -f yarn.lock ]; then \
+        yarn install --frozen-lockfile --production=false \
+            --cache-folder /tmp/.yarn \
+            --network-timeout 100000; \
+    else \
+        npm ci --legacy-peer-deps \
+            --cache /tmp/.npm \
+            --no-audit \
+            --no-fund; \
+    fi
+
+# ==========================================
+# СТАДИЯ СБОРКИ
+# ==========================================
+FROM base as builder
+
+WORKDIR /app
+
+# Копирование зависимостей из предыдущей стадии
+COPY --from=deps /app/node_modules ./node_modules
+
+# Копирование исходного кода
+COPY . .
+
+# Аргументы сборки
+ARG NEXT_PUBLIC_API_URL=https://labosfera.ru/api
+ARG NEXT_PUBLIC_SITE_URL=https://labosfera.ru
+
+# Переменные окружения для сборки
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NODE_ENV=production
+
+# Создание конфигурации оптимизированной для Timeweb Cloud
+RUN cat > next.config.timeweb.mjs << 'EOF'
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Оптимизация для продакшена
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
+  
+  // Оптимизация изображений для NVMe дисков Timeweb Cloud
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 86400, // 24 часа кэширование
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  
+  // Сжатие для экономии трафика (1 Gbps канал Timeweb)
+  compress: true,
+  
+  // Оптимизация JavaScript
+  swcMinify: true,
+  modularizeImports: {
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
+    },
+    'lodash': {
+      transform: 'lodash/{{member}}',
+    },
+  },
+  
+  // Экспериментальные функции для производительности
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@mui/material', '@mui/icons-material'],
+    serverMinification: true,
+    serverSourceMaps: false,
+  },
+  
+  // Настройки вывода для Docker
+  output: 'standalone',
+  
+  // Безопасность
+  headers: async () => [
+    {
+      source: '/(.*)',
+      headers: [
+        {
+          key: 'X-Frame-Options',
+          value: 'DENY',
+        },
+        {
+          key: 'X-Content-Type-Options',
+          value: 'nosniff',
+        },
+        {
+          key: 'Referrer-Policy',
+          value: 'strict-origin-when-cross-origin',
+        },
+        {
+          key: 'Permissions-Policy',
+          value: 'camera=(), microphone=(), geolocation=()',
+        },
+      ],
+    },
+  ],
+  
+  // Переписывание URL для API
+  rewrites: async () => [
+    {
+      source: '/api/backend/:path*',
+      destination: process.env.NEXT_PUBLIC_API_URL + '/:path*',
+    },
+  ],
+  
+  // Редиректы
+  redirects: async () => [
+    {
+      source: '/home',
+      destination: '/',
+      permanent: true,
+    },
+  ],
+};
+
+export default nextConfig;
+EOF
+
+# Замена конфигурации на оптимизированную для Timeweb
+RUN mv next.config.timeweb.mjs next.config.mjs
+
+# Сборка приложения
+RUN if [ -f yarn.lock ]; then \
+        yarn build; \
+    else \
+        npm run build; \
+    fi
+
+# ==========================================
+# СТАДИЯ ПРОДАКШЕНА
+# ==========================================
+FROM base as production
+
+WORKDIR /app
+
+# Создание пользователя nextjs
+USER nextjs
+
+# Копирование публичных файлов
+COPY --from=builder /app/public ./public
+
+# Копирование standalone сборки
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Создание health check скрипта
+USER root
+RUN cat > /app/healthcheck.js << 'EOF'
+const http = require('http');
+
+const options = {
+  hostname: 'localhost',
+  port: 3000,
+  path: '/api/health',
+  method: 'GET',
+  timeout: 5000
+};
+
+const req = http.request(options, (res) => {
+  if (res.statusCode === 200) {
+    console.log('✅ Frontend healthy');
+    process.exit(0);
+  } else {
+    console.log(`❌ Frontend unhealthy: ${res.statusCode}`);
+    process.exit(1);
+  }
+});
+
+req.on('error', (error) => {
+  console.log(`❌ Health check failed: ${error.message}`);
+  process.exit(1);
+});
+
+req.on('timeout', () => {
+  console.log('❌ Health check timeout');
+  req.destroy();
+  process.exit(1);
+});
+
+req.end();
+EOF
+
+# Создание entrypoint скрипта
+RUN cat > /app/entrypoint.sh << 'EOF' && chmod +x /app/entrypoint.sh
+#!/bin/bash
+set -e
+
+echo "🚀 ЛАБОСФЕРА - Запуск Next.js Frontend на Timeweb Cloud"
+echo "=================================================="
+
+# Функция логирования
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Проверка переменных окружения
+log "🔧 Проверка конфигурации..."
+if [ -z "$NEXT_PUBLIC_API_URL" ]; then
+    log "⚠️  NEXT_PUBLIC_API_URL не установлен, используется значение по умолчанию"
+    export NEXT_PUBLIC_API_URL="https://labosfera.ru/api"
+fi
+
+if [ -z "$NEXT_PUBLIC_SITE_URL" ]; then
+    log "⚠️  NEXT_PUBLIC_SITE_URL не установлен, используется значение по умолчанию"
+    export NEXT_PUBLIC_SITE_URL="https://labosfera.ru"
+fi
+
+log "✅ API URL: $NEXT_PUBLIC_API_URL"
+log "✅ Site URL: $NEXT_PUBLIC_SITE_URL"
+
+# Ожидание готовности backend
+log "⏳ Ожидание готовности Backend API..."
+while ! curl -f "$NEXT_PUBLIC_API_URL/health/" > /dev/null 2>&1; do
+    log "Backend API не готов, повтор через 5 секунд..."
+    sleep 5
+done
+log "✅ Backend API готов к работе"
+
+# Запуск сервера
+log "🌐 Запуск Next.js сервера..."
+log "🎯 Оптимизировано для Timeweb Cloud (NVMe + 1 Gbps)"
+log "=================================================="
+
+exec "$@"
+EOF
+
+# Настройка прав доступа
+RUN chown nextjs:nodejs /app/healthcheck.js /app/entrypoint.sh
+
+# Переключение на пользователя nextjs
+USER nextjs
+
+# Открытие порта
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD node /app/healthcheck.js
+
+# Entrypoint и команда
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["node", "server.js"]
+
+# ==========================================
+# СТАДИЯ РАЗРАБОТКИ
+# ==========================================
+FROM base as development
+
+WORKDIR /app
+
+# Копирование файлов зависимостей
+COPY package*.json ./
+COPY yarn.lock* ./
+
+# Установка всех зависимостей включая dev
+RUN if [ -f yarn.lock ]; then \
+        yarn install --frozen-lockfile \
+            --cache-folder /tmp/.yarn \
+            --network-timeout 100000; \
+    else \
+        npm ci --legacy-peer-deps \
+            --cache /tmp/.npm \
+            --no-audit \
+            --no-fund; \
+    fi
+
+# Копирование исходного кода
+COPY --chown=nextjs:nodejs . .
+
+# Переключение на пользователя nextjs
+USER nextjs
+
+# Команда для разработки
+CMD ["npm", "run", "dev"]
+
+# ==========================================
+# ОПТИМИЗАЦИИ ДЛЯ TIMEWEB CLOUD
+# ==========================================
+
+# ✅ Многоступенчатая сборка для минимизации размера
+# ✅ Node.js 20 для максимальной производительности
+# ✅ Alpine Linux для безопасности и скорости
+# ✅ Standalone сборка Next.js
+# ✅ Оптимизация изображений для NVMe дисков
+# ✅ Health checks для мониторинга
+# ✅ Сжатие и минификация для экономии трафика
+# ✅ Безопасность (non-root пользователь)
+# ✅ Кэширование зависимостей
+# ✅ SWC компилятор для скорости
+
+# СБОРКА:
+# docker build -f Dockerfile.timeweb -t labosfera-frontend:timeweb .
+
+# РАЗРАБОТКА:
+# docker build -f Dockerfile.timeweb --target development -t labosfera-frontend:dev .
+
+# ПРОДАКШЕН:
+# docker build -f Dockerfile.timeweb --target production -t labosfera-frontend:prod .

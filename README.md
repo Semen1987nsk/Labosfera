@@ -9,7 +9,39 @@
 
 ## 🚀 Быстрый старт для production
 
-### VPS с правами root
+### 🏆 Рекомендуется: Timeweb Cloud (15 минут до запуска!)
+
+**Почему Timeweb Cloud?**
+- 💰 **400₽/мес** - самая низкая цена на рынке
+- 🚀 **1 Гбит/с** - в 10 раз быстрее конкурентов  
+- ⚡ **0.3-0.6 сек** - молниеносная загрузка страниц
+- 💾 **NVMe диски** - в 6 раз быстрее обычных SSD
+
+```bash
+# 1. Заказать сервер на https://timeweb.cloud/ (5 мин)
+# 2. Подключиться по SSH
+ssh root@YOUR_TIMEWEB_IP
+
+# 3. Автоматическое развертывание (7 минут)
+curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash
+
+# 4. Готово! Сайт работает на https://labosfera.ru 🎉
+```
+
+📚 **Полная документация Timeweb Cloud:**
+- ⚡ **[TIMEWEB_QUICK_START.md](TIMEWEB_QUICK_START.md)** - Быстрый старт (15 минут)
+- 📖 **[TIMEWEB_CLOUD_DEPLOYMENT.md](TIMEWEB_CLOUD_DEPLOYMENT.md)** - Полное руководство
+- 🏆 **[TIMEWEB_CLOUD_PERFECT.md](TIMEWEB_CLOUD_PERFECT.md)** - Почему именно Timeweb
+- 📊 **[TIMEWEB_VS_COMPETITORS.md](TIMEWEB_VS_COMPETITORS.md)** - Сравнение с конкурентами
+- 📋 **[TIMEWEB_CHEATSHEET.md](TIMEWEB_CHEATSHEET.md)** - Шпаргалка команд
+- ❓ **[TIMEWEB_FAQ.md](TIMEWEB_FAQ.md)** - Частые вопросы
+- 📚 **[TIMEWEB_INDEX.md](TIMEWEB_INDEX.md)** - Навигация по всем документам
+
+---
+
+### Альтернативные варианты развертывания
+
+#### VPS с правами root
 ```bash
 # Подключение к VPS как root (или sudo su -)
 ssh root@YOUR_SERVER_IP
@@ -18,7 +50,7 @@ ssh root@YOUR_SERVER_IP
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy.sh | bash
 ```
 
-### Виртуальный хостинг (без sudo)
+#### Виртуальный хостинг (без sudo)
 ```bash
 # Подключение к хостингу REG.RU
 ssh u3283831@server293.hosting.reg.ru
@@ -27,12 +59,12 @@ ssh u3283831@server293.hosting.reg.ru
 curl -fsSL https://raw.githubusercontent.com/Semen1987nsk/Labosfera/main/deploy-hosting.sh | bash
 ```
 
-### Проверка готовности
+#### Проверка готовности
 ```bash
 ./check-deployment.sh
 ```
 
-### Руководства по развертыванию
+#### Руководства по развертыванию
 - **VPS**: [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) и [QUICK_START_VPS.md](QUICK_START_VPS.md)
 - **Хостинг**: [HOSTING_GUIDE.md](HOSTING_GUIDE.md)
 
