@@ -16,6 +16,11 @@ until python -c "import psycopg2; psycopg2.connect('$DATABASE_URL')" 2>/dev/null
 done
 log "✅ PostgreSQL готов к работе"
 
+# Сборка статических файлов
+log "📦 Сборка статических файлов..."
+python manage.py collectstatic --noinput --clear
+log "✅ Статические файлы собраны"
+
 # Применение миграций
 log "📊 Применение миграций базы данных..."
 python manage.py migrate --no-input
