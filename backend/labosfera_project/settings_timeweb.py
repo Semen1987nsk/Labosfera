@@ -206,9 +206,8 @@ USE_TZ = True
 # Статические файлы (оптимизировано для NVMe дисков Timeweb)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# STATICFILES_DIRS отключен, так как используются только staticfiles из приложений
+STATICFILES_DIRS = []
 
 # Оптимизированная обработка статических файлов
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
