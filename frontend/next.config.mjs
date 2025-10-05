@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -25,7 +26,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev/api/:path*',
+        destination: 'http://backend:8000/api/:path*',
       },
     ]
   },
