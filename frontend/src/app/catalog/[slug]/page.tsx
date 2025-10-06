@@ -4,12 +4,9 @@ import { api, Category } from '@/lib/api'; // <-- ИСПРАВЛЕНО: импо
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/Button';
 
-// Эта функция "подсказывает" Next.js, какие страницы существуют
-export async function generateStaticParams() {
-  const categories = await api.getCategories();
-  if (!categories) return [];
-  return categories.map((category) => ({ slug: category.slug }));
-}
+// Делаем страницу динамической, чтобы она загружалась по запросу
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // --- Функция для получения данных о категории ---
 // Она теперь возвращает Promise<Category | null>

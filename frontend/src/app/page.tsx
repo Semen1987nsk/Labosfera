@@ -39,6 +39,10 @@ const AcademicCapIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 // --- Данные для бегущей строки ---
 
+// Делаем страницу динамической
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // --- КОМПОНЕНТ ГЛАВНОЙ СТРАНИЦЫ ---
 export default async function HomePage() {
   const ourProducts = (await api.getProducts()) || []; // Убираем ограничение для infinite scroll
