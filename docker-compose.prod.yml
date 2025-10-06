@@ -20,11 +20,16 @@ services:
       context: ./backend
       dockerfile: Dockerfile.prod
     restart: always
+    env_file:
+      - .env
     environment:
       - DEBUG=False
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - DATABASE_URL=${DATABASE_URL}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - FRONTEND_URL=${FRONTEND_URL}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
