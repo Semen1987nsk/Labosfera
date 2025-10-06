@@ -222,8 +222,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Настройки загрузки файлов
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024   # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024  # 50MB (для изображений товаров)
+FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024   # 50MB (для изображений товаров)
 FILE_UPLOAD_PERMISSIONS = 0o644
 
 # EMAIL
