@@ -53,7 +53,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-electric-blue/0 via-electric-blue/0 to-electric-blue/0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none" />
         
         <Link href={`/product/${product.slug}`} className="block relative group/image">
-          <div className="relative w-full aspect-[4/3] bg-white overflow-hidden">
+          <div className="relative w-full aspect-square bg-white overflow-hidden">
             {imageUrl ? (
               <>
                 {/* Добавляем эффект блика */}
@@ -63,7 +63,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                   alt={product.name}
                   fill
                   style={{ objectFit: 'contain' }}
-                  className="transition-all duration-500 ease-out p-3 sm:p-4 group-hover/image:scale-[1.02] group-hover/image:filter group-hover/image:brightness-105"
+                  className="transition-all duration-500 ease-out p-6 sm:p-8 group-hover/image:scale-105 group-hover/image:filter group-hover/image:brightness-105"
                 />
                 
                 {/* Кнопка быстрого просмотра */}

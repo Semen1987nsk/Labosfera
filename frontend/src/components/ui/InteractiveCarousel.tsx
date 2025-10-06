@@ -116,14 +116,13 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
       }}
     >
       {/* Основная карусель */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-xl shadow-black/20">
+      <div className="relative overflow-hidden rounded-3xl border border-white/20 shadow-2xl shadow-electric-blue/10">
         {/* Декоративный фон */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-electric-blue/10 blur-3xl" />
-          <div className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-purple-500/10 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]" />
-          <div className="absolute inset-0 bg-dark-blue/40 backdrop-blur-sm" />
-          <div className="shimmer-light" />
+          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-electric-blue/20 blur-3xl animate-pulse" />
+          <div className="absolute -bottom-24 -right-24 w-[32rem] h-[32rem] rounded-full bg-purple-500/15 blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(56,189,248,0.08),transparent_60%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-dark-blue/60 via-dark-blue/80 to-dark-blue/90 backdrop-blur-sm" />
         </div>
         {/* Контейнер слайдов */}
         <div 
@@ -136,21 +135,28 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
           {slides.map((slideProducts, slideIndex) => (
             <div 
               key={slideIndex}
-              className={`w-full flex-shrink-0 p-6 sm:p-8 flex items-center justify-center transition-transform duration-500 ${
-                currentSlide === slideIndex ? 'scale-[1.01] shadow-xl shadow-black/20' : 'scale-[0.995] shadow-none'
+              className={`w-full flex-shrink-0 p-8 sm:p-12 flex items-center justify-center transition-transform duration-500 ${
+                currentSlide === slideIndex ? 'scale-100' : 'scale-[0.98] opacity-90'
               }`}
               style={{ width: `${100 / totalSlides}%` }}
             >
-              {/* Простая сетка товаров */}
+              {/* Премиум сетка товаров с увеличенными карточками */}
               <div 
-                className="grid gap-6 w-full max-w-7xl mx-auto" 
+                className="grid gap-8 w-full max-w-7xl mx-auto" 
                 style={{ 
                   gridTemplateColumns: `repeat(${Math.min(cardsToShow, slideProducts.length)}, 1fr)`,
                   gridAutoRows: '1fr'
                 }}
               >
-                {slideProducts.map((product) => (
-                  <div key={product.id} className="flex">
+                {slideProducts.map((product, idx) => (
+                  <div 
+                    key={product.id} 
+                    className="flex transform transition-all duration-500"
+                    style={{
+                      animationDelay: `${idx * 100}ms`,
+                      animationFillMode: 'both'
+                    }}
+                  >
                     <ProductCard product={product} />
                   </div>
                 ))}
