@@ -126,14 +126,28 @@ if not DEBUG:
 # НАСТРОЙКИ CORS и CSRF
 # ==============================================================================
 
+# Получаем FRONTEND_URL из переменных окружения
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+
+# Динамически формируем CORS_ALLOWED_ORIGINS
 CORS_ALLOWED_ORIGINS = [
     'https://labosfera.ru',  # Production domain
     'https://www.labosfera.ru',  # Production www subdomain
-    'https://humble-winner-97w5q7j66rqxhx9qq-3000.app.github.dev',  # Frontend URL
-    'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev',  # Alternative Frontend URL
     'http://localhost:3000',
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
 ]
+
+# Добавляем FRONTEND_URL из .env если он отличается
+if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
+# В режиме отладки добавляем Codespaces URL
+if DEBUG:
+    CODESPACES_URLS = [
+        'https://humble-winner-97w5q7j66rqxhx9qq-3000.app.github.dev',
+        'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev',
+    ]
+    CORS_ALLOWED_ORIGINS.extend(CODESPACES_URLS)
 
 # Разрешаем все методы CORS
 CORS_ALLOW_METHODS = [
@@ -158,13 +172,25 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# ИСПРАВЛЕНО: Добавляем и публичный URL Codespace, и localhost, который он использует
+# Динамически формируем CSRF_TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = [
     'https://labosfera.ru',  # Production domain
     'https://www.labosfera.ru',  # Production www subdomain
-    'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev',
-    'https://localhost:8000',
 ]
+
+# Добавляем FRONTEND_URL для CSRF
+if FRONTEND_URL and FRONTEND_URL not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
+
+# В режиме отладки добавляем localhost и Codespaces
+if DEBUG:
+    DEBUG_ORIGINS = [
+        'http://localhost:3000',
+        'http://localhost:8000',
+        'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev',
+        'https://localhost:8000',
+    ]
+    CSRF_TRUSTED_ORIGINS.extend(DEBUG_ORIGINS)
 
 # --- НАСТРОЙКИ DJANGO REST FRAMEWORK ---
 REST_FRAMEWORK = {
