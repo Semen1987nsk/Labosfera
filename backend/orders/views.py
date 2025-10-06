@@ -1,6 +1,6 @@
 # API views для заявок
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.conf import settings
@@ -24,6 +24,7 @@ def get_client_info(request):
     return ip, user_agent
 
 @api_view(['POST'])
+@authentication_classes([])
 @permission_classes([AllowAny])
 def create_order(request):
     """Создание заявки на заказ из корзины"""
@@ -58,6 +59,7 @@ def create_order(request):
     }, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@authentication_classes([])
 @permission_classes([AllowAny])
 def create_contact_request(request):
     """Создание обращения через форму обратной связи"""
