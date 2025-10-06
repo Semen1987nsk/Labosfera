@@ -4,8 +4,6 @@ import { api, Category } from '@/lib/api'; // <-- ИСПРАВЛЕНО: импо
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/Button';
 
-const BACKEND_URL = 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
-
 // Эта функция "подсказывает" Next.js, какие страницы существуют
 export async function generateStaticParams() {
   const categories = await api.getCategories();

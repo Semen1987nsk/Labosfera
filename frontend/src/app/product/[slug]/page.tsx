@@ -9,7 +9,7 @@ import { api, Product } from "@/lib/api";
 import { useEffect, useState } from "react"; // <-- Импортируем хуки
 import { useCart } from '@/contexts/CartContext';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://labosfera.ru';
 
 // Убираем generateStaticParams, так как страница теперь динамическая
 // export async function generateStaticParams() { ... }

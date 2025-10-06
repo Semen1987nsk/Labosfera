@@ -12,8 +12,6 @@ interface ProductCardProps {
   product: Product;
 }
 
-const BACKEND_URL = 'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev';
-
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -35,10 +33,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   // 3. Если и его нет, mainImage будет undefined.
   const mainImage = product.images?.find(img => img.is_main) || product.images?.[0];
 
-  // Формируем полный URL для найденного изображения
-  const imageUrl = mainImage?.image
-    ? (mainImage.image.startsWith('/') ? `${BACKEND_URL}${mainImage.image}` : mainImage.image)
-    : null;
+  // API уже возвращает полный HTTPS URL, просто используем его
+  const imageUrl = mainImage?.image || null;
 
   return (
     <Tilt
