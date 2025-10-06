@@ -64,7 +64,7 @@ git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
 
 # Переключиться на рабочий коммит
-git checkout 55d1acd
+git checkout a184399
 
 # Проверить что SSL сертификаты на месте
 ls -la nginx/ssl/

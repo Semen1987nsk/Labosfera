@@ -64,7 +64,7 @@ apt install docker-compose git -y
 ```bash
 cd /opt
 git clone https://github.com/Semen1987nsk/Labosfera.git
-cd Labosfera && git checkout 55d1acd
+cd Labosfera && git checkout a184399
 cp /root/.env.labosfera .env
 cp .env backend/.env
 docker-compose -f docker-compose.prod.yml up -d --build
@@ -174,5 +174,5 @@ Labosfera/
 ---
 
 *Создано: 6 октября 2025*  
-*Коммит: 55d1acd*  
+*Коммит: a184399*  
 *SSL до: 6 мая 2026*
