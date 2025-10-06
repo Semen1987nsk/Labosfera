@@ -39,7 +39,7 @@ docker --version && docker-compose --version && git --version
 cd /opt
 git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
-git checkout a184399
+# git checkout c5c6fc1  # Или используйте main (уже на нужной ветке)
 
 # Проверить SSL сертификаты
 ls -la nginx/ssl/

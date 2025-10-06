@@ -64,7 +64,8 @@ git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
 
 # Переключиться на рабочий коммит
-git checkout a184399
+# git checkout c5c6fc1  # Или просто используйте main
+# Проект уже на правильной ветке
 
 # Проверить что SSL сертификаты на месте
 ls -la nginx/ssl/

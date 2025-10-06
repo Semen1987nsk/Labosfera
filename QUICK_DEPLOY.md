@@ -59,7 +59,7 @@ git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
 
 # Переключиться на рабочий коммит
-git checkout a184399
+# git checkout c5c6fc1  # Опционально, если нужен конкретный коммит
 ```
 
 ## 4️⃣ Перенести .env файл на сервер
