@@ -28,8 +28,21 @@ if ! grep -q "DJANGO_ALLOWED_HOSTS" .env; then
 fi
 
 if grep -q "CHANGE_THIS" .env; then
-    echo "⚠️  Предупреждение: Некоторые переменные содержат значения по умолчанию"
-    echo "   Убедитесь, что вы изменили секретные ключи и пароли"
+    echo "❌ Ошибка: Найдены неизмененные переменные CHANGE_THIS в .env"
+    echo "   Используйте .env.production.template как образец"
+    exit 1
+fi
+
+if grep -q "http://labosfera.ru" .env; then
+    echo "⚠️  Предупреждение: Найдены HTTP URLs, должны быть HTTPS"
+    echo "   Проверьте NEXT_PUBLIC_API_URL, CORS_ALLOWED_ORIGINS, CSRF_TRUSTED_ORIGINS"
+fi
+
+# Проверка синхронизации с docker-compose.prod.yml
+if ! grep -q "labosfera_db" .env; then
+    echo "❌ Ошибка: Настройки БД не синхронизированы с docker-compose.prod.yml"
+    echo "   DATABASE_URL должен использовать labosfera_db и labosfera_user"
+    exit 1
 fi
 
 # Сборка образов
