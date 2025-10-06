@@ -29,6 +29,12 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 # --- БЕЗОПАСНОСТЬ: Указываем конкретные хосты ---
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# --- НАСТРОЙКИ ЗАГРУЗКИ ФАЙЛОВ ---
+# Максимальный размер загружаемого файла (в байтах): 100 МБ
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
+# Максимальный размер POST запроса (в байтах): 100 МБ
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

@@ -8,10 +8,10 @@ import uuid
 
 def validate_image_size(image):
     """Валидация размера изображения"""
-    # Максимальный размер файла: 5 МБ
-    max_size = 5 * 1024 * 1024
+    # Максимальный размер файла: 20 МБ
+    max_size = 20 * 1024 * 1024
     if image.size > max_size:
-        raise ValidationError('Размер изображения не должен превышать 5 МБ')
+        raise ValidationError('Размер изображения не должен превышать 20 МБ')
 
 def validate_image_dimensions(image):
     """Валидация размеров изображения"""
@@ -89,7 +89,7 @@ class ProductImage(models.Model):
         upload_to='products/', 
         verbose_name="Изображение",
         validators=[validate_image_size, validate_image_dimensions],
-        help_text="Форматы: JPEG, PNG, WebP. Размер: 400×300 - 3000×3000 пикселей. Максимум: 5 МБ"
+        help_text="Форматы: JPEG, PNG, WebP. Размер: 400×300 - 3000×3000 пикселей. Максимум: 20 МБ"
     )
     is_main = models.BooleanField(default=False, verbose_name="Главное изображение")
     alt_text = models.CharField(max_length=255, blank=True, verbose_name="Альтернативный текст", 
