@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.decorators.csrf import csrf_exempt
 from .health import health_check
 
 urlpatterns = [
@@ -12,7 +13,7 @@ urlpatterns = [
     path('api/health/', health_check, name='health_check'),
     # Подключаем все URL'ы из нашего приложения catalog по префиксу api/v1/
     path('api/v1/', include('catalog.urls')),
-    # Подключаем URL'ы для заявок
+    # Подключаем URL'ы для заявок (без CSRF проверки для API)
     path('api/v1/', include('orders.urls')),
 ]
 
