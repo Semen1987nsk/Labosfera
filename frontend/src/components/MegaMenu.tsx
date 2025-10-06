@@ -6,7 +6,9 @@ import { Fragment, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const categories = [
+  { name: 'Физика', slug: 'fizika', description: 'Оборудование для ОГЭ по физике', icon: '⚛️' },
   { name: 'Химия', slug: 'himiya', description: 'Оборудование для ОГЭ по химии', icon: '🧪' },
+  { name: 'Программное обеспечение', slug: 'software', description: 'Интерактивные ОГЭ-лаборатории по физике и химии', icon: '💻' },
 ];
 
 export const MegaMenu = () => {
