@@ -14,6 +14,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'labosfera.ru',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
       }
     ],
   },
