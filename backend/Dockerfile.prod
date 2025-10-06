@@ -19,6 +19,9 @@ COPY . .
 # Create logs directory
 RUN mkdir -p /app/logs && chmod 777 /app/logs
 
+# Create media directory with correct permissions
+RUN mkdir -p /app/media && chmod 755 /app/media
+
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser
 RUN chown -R appuser:appuser /app
