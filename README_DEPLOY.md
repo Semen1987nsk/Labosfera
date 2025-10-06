@@ -75,7 +75,7 @@ nano .env.production  # Заполнить все необходимые пол�
 cd /opt
 git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
-git checkout b766c28
+git checkout 55d1acd
 
 # Создать .env файл (скопировать с локальной машины)
 nano .env

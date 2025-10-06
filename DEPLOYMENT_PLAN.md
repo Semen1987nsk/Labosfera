@@ -102,7 +102,7 @@ git clone https://github.com/Semen1987nsk/Labosfera.git
 cd Labosfera
 
 # Переключиться на нужный коммит (b766c28)
-git checkout b766c28
+git checkout 55d1acd
 ```
 
 ## 📝 ШАГ 4: Настройка окружения на сервере
