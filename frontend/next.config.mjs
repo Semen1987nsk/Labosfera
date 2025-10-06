@@ -10,6 +10,10 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: '**.app.github.dev',
+      },
+      {
+        protocol: 'https',
+        hostname: 'labosfera.ru',
       }
     ],
   },
