@@ -29,6 +29,10 @@ ENV NODE_ENV=production \
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 
+# Создание директорий с правильными правами
+RUN mkdir -p /tmp/.npm /tmp/.yarn && \
+    chown -R nextjs:nodejs /tmp/.npm /tmp/.yarn
+
 # Создание рабочей директории
 WORKDIR /app
 
