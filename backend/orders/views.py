@@ -4,9 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.conf import settings
+import logging
 from .models import Order, ContactRequest
 from .serializers import OrderCreateSerializer, ContactRequestCreateSerializer
-from .telegram_notifications import send_order_notification, send_contact_notification
+from .telegram import notify_new_order, notify_contact_request
+
+logger = logging.getLogger(__name__)
 
 def get_client_info(request):
     """Получение информации о клиенте"""
@@ -38,7 +41,7 @@ def create_order(request):
         
         # Отправляем уведомления
         try:
-            send_order_notification(order)
+            notify_new_order(order)
             logger.info(f"Order notification sent for order #{order.id}")
         except Exception as e:
             logger.error(f"Error sending order notification #{order.id}: {e}", exc_info=True)
@@ -53,9 +56,6 @@ def create_order(request):
         'success': False,
         'errors': serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
-
-import logging
-logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -80,7 +80,7 @@ def create_contact_request(request):
         
         # Отправляем уведомления
         try:
-            send_contact_notification(contact)
+            notify_contact_request(contact)
             logger.info(f"Telegram notification sent for contact #{contact.id}")
         except Exception as e:
             logger.error(f"Error sending notification for contact #{contact.id}: {e}", exc_info=True)

@@ -126,6 +126,8 @@ CSRF_COOKIE_SECURE = True  # Отправлять CSRF cookie только че�
 # ==============================================================================
 
 CORS_ALLOWED_ORIGINS = [
+    'https://labosfera.ru',  # Production domain
+    'https://www.labosfera.ru',  # Production www subdomain
     'https://humble-winner-97w5q7j66rqxhx9qq-3000.app.github.dev',  # Frontend URL
     'https://humble-winner-97w5q7j66rqxhx9qq-3001.app.github.dev',  # Alternative Frontend URL
     'http://localhost:3000',
@@ -157,8 +159,10 @@ CORS_ALLOW_HEADERS = [
 
 # ИСПРАВЛЕНО: Добавляем и публичный URL Codespace, и localhost, который он использует
 CSRF_TRUSTED_ORIGINS = [
+    'https://labosfera.ru',  # Production domain
+    'https://www.labosfera.ru',  # Production www subdomain
     'https://humble-winner-97w5q7j66rqxhx9qq-8000.app.github.dev',
-    'https://localhost:8000', # <-- ДОБАВЛЕНА ЭТА СТРОКА
+    'https://localhost:8000',
 ]
 
 # --- НАСТРОЙКИ DJANGO REST FRAMEWORK ---
