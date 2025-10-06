@@ -86,7 +86,22 @@ export default async function HomePage() {
         </Container>
       </AnimatedSection>
 
-      {/* === Блок 2: Наше производство (Bento Grid + Spotlight) === */}
+      {/* === Блок 2: Наша продукция (интерактивная карусель) === */}
+      <AnimatedSection className="py-20 bg-dark-blue">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-electric-blue to-purple-400 bg-clip-text text-transparent">
+              Наша продукция
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">
+              Управляйте каруселью с помощью мыши, кнопок или точек навигации
+            </p>
+          </div>
+          <InteractiveCarousel products={ourProducts} />
+        </Container>
+      </AnimatedSection>
+
+      {/* === Блок 3: Наше производство (Bento Grid + Spotlight) === */}
       <AnimatedSection className="py-20 bg-dark-blue relative overflow-hidden">
         {/* Добавляем плавающие частицы на фон */}
         <div className="absolute inset-0">
@@ -125,32 +140,16 @@ export default async function HomePage() {
         </Container>
       </AnimatedSection>
 
-      {/* === Бегущая строка === */}
-      {/* === Блок 3: Почему мы создали ЛАБОСФЕРУ === */}
+      {/* === Блок 4: Почему мы создали ЛАБОСФЕРУ === */}
       <WhyWeCreatedSection />
 
-      {/* === Блок 4: Наши ценности и миссия === */}
+      {/* === Блок 5: Наши ценности и миссия === */}
       <ValuesSection />
 
-      {/* === Блок 5: Наша экспертиза === */}
+      {/* === Блок 6: Наша экспертиза === */}
       <ExpertiseSection />
 
-      {/* === Блок 5: Наша продукция (интерактивная карусель) === */}
-      <AnimatedSection className="py-20">
-        <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-electric-blue to-purple-400 bg-clip-text text-transparent">
-              Наша продукция
-            </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">
-              Управляйте каруселью с помощью мыши, кнопок или точек навигации
-            </p>
-          </div>
-          <InteractiveCarousel products={ourProducts} />
-        </Container>
-      </AnimatedSection>
-
-      {/* === Блок 6: Форма обратной связи === */}
+      {/* === Блок 7: Форма обратной связи === */}
       <CallbackForm />
     </main>
   );
