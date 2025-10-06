@@ -116,7 +116,7 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
       }}
     >
       {/* Основная карусель */}
-      <div className="relative overflow-hidden rounded-2xl min-h-[480px] border border-white/10 shadow-xl shadow-black/20">
+      <div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-xl shadow-black/20">
         {/* Декоративный фон */}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-electric-blue/10 blur-3xl" />
@@ -136,20 +136,21 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
           {slides.map((slideProducts, slideIndex) => (
             <div 
               key={slideIndex}
-              className={`w-full flex-shrink-0 p-6 sm:p-8 flex items-stretch justify-center transition-transform duration-500 ${
+              className={`w-full flex-shrink-0 p-6 sm:p-8 flex items-center justify-center transition-transform duration-500 ${
                 currentSlide === slideIndex ? 'scale-[1.01] shadow-xl shadow-black/20' : 'scale-[0.995] shadow-none'
               }`}
               style={{ width: `${100 / totalSlides}%` }}
             >
               {/* Простая сетка товаров */}
               <div 
-                className="grid gap-6 w-full max-w-7xl mx-auto content-stretch" 
+                className="grid gap-6 w-full max-w-7xl mx-auto" 
                 style={{ 
-                  gridTemplateColumns: `repeat(${Math.min(cardsToShow, slideProducts.length)}, 1fr)` 
+                  gridTemplateColumns: `repeat(${Math.min(cardsToShow, slideProducts.length)}, 1fr)`,
+                  gridAutoRows: '1fr'
                 }}
               >
                 {slideProducts.map((product) => (
-                  <div key={product.id} className="w-full">
+                  <div key={product.id} className="flex">
                     <ProductCard product={product} />
                   </div>
                 ))}
