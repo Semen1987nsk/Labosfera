@@ -53,7 +53,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-electric-blue/0 via-electric-blue/0 to-electric-blue/0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none" />
         
         <Link href={`/product/${product.slug}`} className="block relative group/image">
-          <div className="relative w-full aspect-square bg-white overflow-hidden">
+          <div className="relative w-full aspect-[1/1] bg-white overflow-hidden" style={{ minHeight: '300px' }}>
             {imageUrl ? (
               <>
                 {/* Добавляем эффект блика */}
@@ -86,7 +86,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </Link>
 
         <div className="p-6 flex flex-col flex-grow relative z-10">
-          <h3 className="font-semibold text-lg leading-snug text-balance hyphens-auto line-clamp-2 md:line-clamp-3">
+          <h3 className="font-semibold text-xl leading-snug text-balance hyphens-auto line-clamp-2 md:line-clamp-3">
             <Link 
               href={`/product/${product.slug}`} 
               className="hover:text-electric-blue transition-all duration-300 hover:tracking-wide"
@@ -96,7 +96,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </h3>
           
           <div className="mt-auto pt-2 flex flex-col gap-3">
-            <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-electric-blue to-blue-400 group-hover:to-purple-500 transition-all duration-500">
+            <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-electric-blue to-blue-400 group-hover:to-purple-500 transition-all duration-500">
               {parseFloat(product.price).toLocaleString('ru-RU')} ₽
             </p>
             

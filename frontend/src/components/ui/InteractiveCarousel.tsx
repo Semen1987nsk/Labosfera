@@ -16,13 +16,12 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   // Без лишних логов
 
-  // Адаптивное количество карточек
+  // Адаптивное количество карточек - МЕНЬШЕ карточек = БОЛЬШЕ размер
   useEffect(() => {
     const updateCardsToShow = () => {
       if (window.innerWidth < 640) setCardsToShow(1);
       else if (window.innerWidth < 1024) setCardsToShow(2);
-      else if (window.innerWidth < 1280) setCardsToShow(3);
-      else setCardsToShow(4);
+      else setCardsToShow(3); // Максимум 3 карточки вместо 4
     };
 
     updateCardsToShow();
@@ -142,7 +141,7 @@ export const InteractiveCarousel = ({ products }: InteractiveCarouselProps) => {
             >
               {/* Премиум сетка товаров с увеличенными карточками */}
               <div 
-                className="grid gap-8 w-full max-w-7xl mx-auto" 
+                className="grid gap-10 w-full max-w-6xl mx-auto" 
                 style={{ 
                   gridTemplateColumns: `repeat(${Math.min(cardsToShow, slideProducts.length)}, 1fr)`,
                   gridAutoRows: '1fr'
