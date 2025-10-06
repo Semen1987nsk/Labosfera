@@ -1,8 +1,10 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 from PIL import Image
 from ckeditor.fields import RichTextField
 import os
+import uuid
 
 def validate_image_size(image):
     """Валидация размера изображения"""
@@ -55,6 +57,18 @@ class Product(models.Model):
     sort_order = models.IntegerField(default=0, verbose_name="Порядок сортировки", help_text="Чем меньше число, тем выше товар в списке")
     is_featured = models.BooleanField(default=False, verbose_name="Рекомендуемый товар", help_text="Будет показан в начале списка")
     
+    def save(self, *args, **kwargs):
+        # Автогенерация slug если не указан
+        if not self.slug:
+            base_slug = slugify(self.name) if self.name else f'product-{uuid.uuid4().hex[:8]}'
+            unique_slug = base_slug
+            counter = 1
+            while Product.objects.filter(slug=unique_slug).exclude(pk=self.pk).exists():
+                unique_slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -85,12 +99,16 @@ class ProductImage(models.Model):
         return f"Изображение для {self.product.name}"
 
     def save(self, *args, **kwargs):
+        # Если это изображение помечено как главное, снимаем флаг со всех остальных
+        if self.is_main:
+            ProductImage.objects.filter(product=self.product, is_main=True).exclude(pk=self.pk).update(is_main=False)
+        
         super().save(*args, **kwargs)
         
-        # Автоматически делаем первое изображение главным
+        # Автоматически делаем первое изображение главным, если ни одно не помечено
         if not ProductImage.objects.filter(product=self.product, is_main=True).exists():
             self.is_main = True
-            super().save(*args, **kwargs)
+            super().save(update_fields=['is_main'])
         
         # Оптимизация изображения
         if self.image:
