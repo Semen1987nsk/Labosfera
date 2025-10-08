@@ -44,7 +44,7 @@ export default function ProductionPage() {
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-light-grey/80 bg-clip-text text-transparent mb-8">
-              Страница в разработке
+              Раздел обновляется
             </h2>
             <div className="max-w-4xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -75,8 +75,7 @@ export default function ProductionPage() {
                   </div>
                   <h3 className="text-xl font-semibold text-electric-blue mb-2">Контент готовится</h3>
                   <p className="text-light-grey/70 max-w-2xl mx-auto">
-                    Мы работаем над созданием подробной информации о нашем производстве, технологических процессах и качестве продукции. 
-                    Следите за обновлениями!
+                    Мы дополняем информацию о производстве новыми фотографиями, видео и подробным описанием технологических процессов. Следите за обновлениями!
                   </p>
                   <div className="mt-6">
                     <Link href="/catalog">

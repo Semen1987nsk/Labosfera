@@ -152,7 +152,7 @@ export const ExpertiseSection = () => {
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Мы объединили знания педагогов, опыт инженеров и современные технологии
+            Мы объединили знания педагогов, опыт инженеров и достижения современных технологий
           </motion.p>
         </motion.div>
 

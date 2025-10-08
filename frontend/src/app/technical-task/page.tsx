@@ -13,9 +13,7 @@ export default function TechnicalTaskPage() {
               Техническое задание
             </h1>
             <p className="text-xl text-light-grey/80 max-w-4xl mx-auto leading-relaxed">
-              Если Вас заинтересовало наше оборудование и Вы планируете приобрести его через объявление торгов, 
-              то мы можем оказать содействие в составлении технического задания, определить начальную максимальную 
-              цену контракта (НМЦК).
+              Планируете закупку оборудования через систему торгов? Мы поможем подготовить техническое задание и рассчитать начальную максимальную цену контракта (НМЦК) для успешного проведения тендера.
             </p>
           </div>
         </Container>
@@ -27,33 +25,33 @@ export default function TechnicalTaskPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-deep-blue/50 rounded-2xl p-8 mb-12 border border-white/10">
               <h2 className="text-2xl font-semibold mb-6 text-electric-blue">
-                Для составления технического задания необходимо указать:
+                Что нужно указать в заявке:
               </h2>
               <ul className="space-y-3 text-light-grey/80">
                 <li className="flex items-start">
                   <span className="text-electric-blue mr-3">•</span>
-                  перечень необходимого оборудования
+                  Список требуемого оборудования
                 </li>
                 <li className="flex items-start">
                   <span className="text-electric-blue mr-3">•</span>
-                  контактное лицо
+                  ФИО ответственного лица
                 </li>
                 <li className="flex items-start">
                   <span className="text-electric-blue mr-3">•</span>
-                  телефон
+                  Номер телефона для связи
                 </li>
                 <li className="flex items-start">
                   <span className="text-electric-blue mr-3">•</span>
-                  e-mail (электронная почта)
+                  Адрес электронной почты
                 </li>
                 <li className="flex items-start">
                   <span className="text-electric-blue mr-3">•</span>
-                  подгрузить файл (при необходимости)
+                  Дополнительные файлы (если есть)
                 </li>
               </ul>
               <div className="mt-6 p-4 bg-electric-blue/10 rounded-lg border border-electric-blue/20">
                 <p className="text-electric-blue font-medium">
-                  ⏱ Стандартный срок ответа на запрос – 1-2 рабочих дня
+                  ⏱ Мы ответим на ваш запрос в течение 1-2 рабочих дней
                 </p>
               </div>
             </div>
@@ -61,7 +59,7 @@ export default function TechnicalTaskPage() {
             {/* === Форма === */}
             <div className="bg-deep-blue rounded-2xl p-8 border border-white/10">
               <h2 className="text-2xl font-semibold mb-8 text-center">
-                Заполните форму для получения технического задания
+                Оставьте заявку на подготовку технического задания
               </h2>
               <TechnicalTaskForm />
             </div>

@@ -29,6 +29,7 @@ export interface Product {
   description: string;
   category: number;
   category_name?: string;
+  category_slug?: string;
 }
 
 // Типы для заявок
@@ -74,6 +75,7 @@ class ApiClient {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...options,
+        cache: 'no-store', // Отключаем кэширование для всех запросов
         headers: {
           'Accept': 'application/json',
           ...options?.headers,

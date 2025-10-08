@@ -22,10 +22,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     category_name = serializers.CharField(source='category.name', read_only=True)
+    category_slug = serializers.CharField(source='category.slug', read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'price', 'description', 'category', 'category_name', 'images']
+        fields = ['id', 'name', 'slug', 'price', 'description', 'category', 'category_name', 'category_slug', 'images']
     
     def get_images(self, obj):
         """Получаем изображения и передаем контекст в сериализатор"""

@@ -67,8 +67,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
       <Container>
         <div className="text-sm text-light-grey/70 mb-4">
           <Link href="/catalog" className="hover:text-white">Каталог</Link> / 
-          {product.category_name && (
-            <Link href={`/catalog/${product.category_name.toLowerCase()}`} className="hover:text-white"> {product.category_name} </Link>
+          {product.category_slug && product.category_name && (
+            <Link href={`/catalog/${product.category_slug}`} className="hover:text-white"> {product.category_name} </Link>
           )}
           / {product.name}
         </div>

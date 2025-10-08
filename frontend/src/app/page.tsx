@@ -55,10 +55,10 @@ export default async function HomePage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60rem] h-[60rem] bg-electric-blue/20 rounded-full blur-3xl animate-pulse" />
         <Container className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold">
-            Учебное оборудование от производителя <span className="text-electric-blue">ЛАБОСФЕРА</span>
+            Учебное оборудование от компании <span className="text-electric-blue">«ЛАБОСФЕРА»</span>
           </h1>
           <p className="mt-6 max-w-3xl mx-auto text-lg text-light-grey/80">
-            Поставляем оборудование для ОГЭ по физике/химии в полном соответствии ФИПИ. Собственное производство и прямая заводская гарантия.
+            Поставляем оборудование для ОГЭ по физике и химии в полном соответствии с требованиями ФИПИ. <span className="font-semibold bg-gradient-to-r from-electric-blue to-cyan-400 bg-clip-text text-transparent">Собственное производство</span> и прямая заводская гарантия.
           </p>
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/catalog">
@@ -77,10 +77,10 @@ export default async function HomePage() {
         <Container>
           <StatsGrid
             stats={[
-              { end: 150, suffix: '+', label: 'Школ-партнеров' },
-              { end: 15, suffix: ' лет', label: 'На рынке' },
-              { end: 50, suffix: '+', label: 'Регионов РФ' },
-              { end: 99, suffix: '%', label: 'Довольных клиентов' },
+              { end: 10, suffix: '+', label: 'Лет опыта команды' },
+              { end: 20, suffix: '+', label: 'Экспертов в штате' },
+              { end: 1000, suffix: '+', label: 'Единиц оборудования в год' },
+              { end: 100, suffix: '%', label: 'Соответствие ФИПИ' },
             ]}
           />
         </Container>
@@ -94,7 +94,7 @@ export default async function HomePage() {
               Наша продукция
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-light-grey/70">
-              Управляйте каруселью с помощью мыши, кнопок или точек навигации
+              Листайте продукцию с помощью мыши, кнопок или точек навигации
             </p>
           </div>
           <InteractiveCarousel products={ourProducts} />
@@ -114,14 +114,14 @@ export default async function HomePage() {
               Собственное производство — гарантия высочайшего качества
             </h2>
             <p className="mt-4 max-w-2xl mx-auto text-light-grey/70 animate-fade-in">
-              Мы не просто продаем, мы создаем. Это позволяет нам контролировать каждый этап и предлагать качественное оборудование и ПО.
+              Мы не просто продаем, мы создаем. Это позволяет нам контролировать каждый этап производства и гарантировать высокое качество оборудования и программного обеспечения.
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <SpotlightCard className="lg:col-span-2 flex flex-col items-center justify-center text-center">
               <WrenchIcon className="w-16 h-16 text-electric-blue mb-4" />
               <h3 className="text-2xl font-semibold">Современное оборудование</h3>
-              <p className="mt-2 text-light-grey/60 max-w-md">Используем высокоточные станки с ЧПУ и 3D-печать для производства надежных и долговечных компонентов.</p>
+              <p className="mt-2 text-light-grey/60 max-w-md">Мы используем высокоточные станки с ЧПУ и 3D-печать для производства надежных и долговечных компонентов.</p>
             </SpotlightCard>
             <SpotlightCard className="flex flex-col items-center justify-center text-center">
               <ShieldCheckIcon className="w-12 h-12 text-electric-blue mb-4" />
@@ -133,7 +133,7 @@ export default async function HomePage() {
               <h3 className="text-xl font-semibold">Высококвалифицированные кадры</h3>
               <p className="mt-2 text-light-grey/60 max-w-3xl mx-auto">
                 Команда экспертов с опытом 15+ лет: инженеры-конструкторы, методисты ФГОС и эксперты ФИПИ. 
-                Создаём не просто оборудование, а готовые образовательные решения с методичками и обучением педагогов.
+                Создаем не просто оборудование, а готовые образовательные решения с методическими материалами и обучением педагогов.
               </p>
             </SpotlightCard>
           </div>
