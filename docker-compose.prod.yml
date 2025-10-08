@@ -26,6 +26,7 @@ services:
       - .env
     environment:
       - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=labosfera_project.settings_prod
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - DATABASE_URL=${DATABASE_URL}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
