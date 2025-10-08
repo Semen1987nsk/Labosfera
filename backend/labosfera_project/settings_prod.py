@@ -59,10 +59,10 @@ LOGGING = {
     },
 }
 
-# Cache
+# Cache - используем встроенный кэш в памяти (можно позже добавить Redis)
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': 'redis://redis:6379/1',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
     }
 }
