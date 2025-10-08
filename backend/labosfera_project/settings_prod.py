@@ -3,21 +3,40 @@ import os
 from .settings import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'labosfera.ru').split(',')
+# ALLOWED_HOSTS с fallback значениями
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'labosfera.ru,www.labosfera.ru,109.73.192.44').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
-# Database
+# Database с fallback значениями
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'db',
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRES_DB', 'labosfera_production'),
+        'USER': os.environ.get('POSTGRES_USER', 'labosfera_prod_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'CONN_MAX_AGE': 600,  # Connection pooling
     }
 }
+
+# SECRET_KEY с проверкой
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("DJANGO_SECRET_KEY environment variable is not set!")
+
+# CORS Settings
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    'CORS_ALLOWED_ORIGINS', 
+    'https://labosfera.ru,https://www.labosfera.ru'
+).split(',')
+
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS',
+    'https://labosfera.ru,https://www.labosfera.ru'
+).split(',')
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'

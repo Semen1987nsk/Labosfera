@@ -1,4 +1,8 @@
 # Production Docker Compose для labosfera.ru
+# Версия: 3.8
+# Для корректного деплоя используйте: bash deploy-production.sh
+
+version: '3.8'
 
 services:
   # PostgreSQL Database
@@ -8,15 +12,20 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB:-labosfera_production}
+      POSTGRES_USER: ${POSTGRES_USER:-labosfera_prod_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labosfera_prod_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # Django Backend
+    # Django Backend
   backend:
     build: 
       context: ./backend
@@ -25,21 +34,28 @@ services:
     env_file:
       - .env
     environment:
-      - DEBUG=False
       - DJANGO_SETTINGS_MODULE=labosfera_project.settings_prod
-      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DEBUG=False
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-labosfera.ru,www.labosfera.ru}
       - DATABASE_URL=${DATABASE_URL}
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-      - FRONTEND_URL=${FRONTEND_URL}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://labosfera.ru}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Next.js Frontend
   frontend:
