@@ -48,12 +48,20 @@ const OrderForm = ({ onClose }: { onClose: () => void }) => {
     phone: '',
     organization: '',
     message: '',
+    consent: false, // Согласие на обработку ПД (требование ФЗ-152)
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Проверка согласия (критично по ФЗ-152!)
+    if (!formData.consent) {
+      alert('Необходимо согласие на обработку персональных данных');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -162,6 +170,36 @@ const OrderForm = ({ onClose }: { onClose: () => void }) => {
           onChange={(e) => setFormData({...formData, message: e.target.value})}
           className="w-full px-4 py-3 bg-deep-blue border border-white/20 rounded-lg text-white placeholder-light-grey/50 focus:border-electric-blue focus:outline-none resize-none"
         />
+      </div>
+
+      {/* Согласие на обработку персональных данных (ФЗ-152) */}
+      <div className="flex items-start gap-2 pt-2">
+        <input
+          type="checkbox"
+          id="cart-consent"
+          checked={formData.consent}
+          onChange={(e) => setFormData({...formData, consent: e.target.checked})}
+          className="mt-1 w-4 h-4 rounded border-white/20 bg-deep-blue text-electric-blue focus:ring-electric-blue focus:ring-offset-0"
+        />
+        <label htmlFor="cart-consent" className="text-sm text-light-grey/80">
+          Я согласен на обработку персональных данных в соответствии с{' '}
+          <Link 
+            href="/privacy-policy" 
+            target="_blank"
+            className="text-electric-blue hover:underline"
+          >
+            политикой конфиденциальности
+          </Link>
+          {' '}и{' '}
+          <Link 
+            href="/offer" 
+            target="_blank"
+            className="text-electric-blue hover:underline"
+          >
+            договором оферты
+          </Link>
+          {' *'}
+        </label>
       </div>
 
       <div className="flex gap-3 pt-4">

@@ -7,6 +7,7 @@ import { CartProvider } from '@/contexts/CartContext';
 import { CartSlideOut } from '@/components/ui/CartSlideOut';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { ToastProvider } from '@/components/ui/Toast';
+import CookieBanner from '@/components/CookieBanner';
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main>{children}</main>
             <Footer />
             <CartSlideOut />
+            <CookieBanner />
           </CartProvider>
         </ToastProvider>
       </body>

@@ -245,9 +245,13 @@ export const ContactForm = () => {
             className="w-4 h-4 mt-1 text-electric-blue bg-dark-blue border-white/10 rounded focus:ring-electric-blue"
           />
           <span className="text-sm text-light-grey/80">
-            Я согласен на обработку персональных данных и с{' '}
-            <a href="/privacy" className="text-electric-blue hover:underline">
-              политикой конфиденциальности
+            Я согласен на обработку персональных данных и принимаю условия{' '}
+            <a href="/privacy-policy" target="_blank" className="text-electric-blue hover:underline">
+              политики конфиденциальности
+            </a>
+            {' '}и{' '}
+            <a href="/terms" target="_blank" className="text-electric-blue hover:underline">
+              пользовательского соглашения
             </a>
           </span>
         </label>

@@ -1,4 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+
+// Функция для открытия настроек cookies
+const openCookieSettings = () => {
+  if (typeof window !== 'undefined') {
+    // Удаляем сохраненное согласие, чтобы баннер появился снова
+    localStorage.removeItem('cookieConsent');
+    // Перезагружаем страницу для показа баннера
+    window.location.reload();
+  }
+};
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -26,23 +38,29 @@ export const Footer = () => {
               <li><Link href="/certificates" className="text-light-grey/80 hover:text-white">Сертификаты</Link></li>
               <li><Link href="/custom-task" className="text-light-grey/80 hover:text-white">Техническое задание</Link></li>
             </ul>
+            
+            <h4 className="font-semibold text-light-grey mt-6">Информация</h4>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li><Link href="/about/requisites" className="text-light-grey/80 hover:text-white">Реквизиты организации</Link></li>
+              <li><Link href="/delivery" className="text-light-grey/80 hover:text-white">Доставка и оплата</Link></li>
+              <li><Link href="/privacy-policy" className="text-light-grey/80 hover:text-white">Политика конфиденциальности</Link></li>
+              <li><Link href="/offer" className="text-light-grey/80 hover:text-white">Договор оферты</Link></li>
+              <li><Link href="/terms" className="text-light-grey/80 hover:text-white">Пользовательское соглашение</Link></li>
+              <li>
+                <button 
+                  onClick={openCookieSettings}
+                  className="text-light-grey/80 hover:text-electric-blue transition-colors"
+                >
+                  Настройки cookies
+                </button>
+              </li>
+            </ul>
           </div>
 
           {/* Блок с контактами */}
           <div>
             <h4 className="font-semibold text-light-grey">Контакты</h4>
             <ul className="mt-4 space-y-3 text-sm">
-              <li>
-                <a 
-                  href="tel:88004564554" 
-                  className="text-light-grey/80 hover:text-electric-blue transition-colors flex items-center justify-center md:justify-start gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  8 800 456 4554
-                </a>
-              </li>
               <li>
                 <a 
                   href="mailto:info@labosfera.ru" 
@@ -57,8 +75,25 @@ export const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-dark-blue text-center text-xs text-light-grey/50">
-          <p>&copy; {currentYear} ООО "ЛАБОСФЕРА". Все права защищены.</p>
+        {/* Компактный блок с реквизитами и копирайтом */}
+        <div className="mt-8 pt-6 border-t border-white/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-light-grey/60">
+            {/* Реквизиты */}
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
+              <span className="font-medium text-light-grey/80">ООО "ЛАБОСФЕРА"</span>
+              <span className="hidden md:inline">•</span>
+              <span>ИНН 5406846548</span>
+              <span className="hidden md:inline">•</span>
+              <span>ОГРН 1255400006344</span>
+              <span className="hidden md:inline">•</span>
+              <span className="text-center md:text-left">г. Новосибирск, ул. Сибирская, 41, офис 26</span>
+            </div>
+            
+            {/* Копирайт */}
+            <div className="text-light-grey/50 whitespace-nowrap">
+              © {currentYear} Все права защищены
+            </div>
+          </div>
         </div>
       </div>
     </footer>

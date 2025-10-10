@@ -10,6 +10,7 @@ interface FormData {
   email: string;
   organization: string;
   message: string;
+  consentGiven: boolean;
 }
 
 export const CallbackForm = () => {
@@ -20,7 +21,8 @@ export const CallbackForm = () => {
     phone: '',
     email: '',
     organization: '',
-    message: ''
+    message: '',
+    consentGiven: false
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,6 +61,10 @@ export const CallbackForm = () => {
 
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Введите корректный email';
+    }
+
+    if (!formData.consentGiven) {
+      newErrors.consent = 'Необходимо согласие на обработку персональных данных';
     }
 
     setErrors(newErrors);
@@ -107,7 +113,8 @@ export const CallbackForm = () => {
             phone: '',
             email: '',
             organization: '',
-            message: ''
+            message: '',
+            consentGiven: false
           });
         }, 5000);
       } else {
@@ -349,6 +356,42 @@ export const CallbackForm = () => {
                       />
                     </motion.div>
 
+                    {/* Согласие на обработку персональных данных */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : {}}
+                      transition={{ duration: 0.6, delay: 0.95 }}
+                      className="flex items-start gap-3"
+                    >
+                      <input
+                        type="checkbox"
+                        id="consent"
+                        checked={formData.consentGiven}
+                        onChange={(e) => {
+                          setFormData(prev => ({ ...prev, consentGiven: e.target.checked }));
+                          if (errors.consent) {
+                            setErrors(prev => ({ ...prev, consent: '' }));
+                          }
+                        }}
+                        className={`mt-1 w-5 h-5 rounded border-2 bg-white/5 focus:ring-2 focus:ring-electric-blue/50 transition-all cursor-pointer ${
+                          errors.consent ? 'border-red-400' : 'border-white/30'
+                        }`}
+                      />
+                      <label htmlFor="consent" className="text-sm text-light-grey/80 cursor-pointer">
+                        Я согласен на обработку персональных данных и принимаю условия{' '}
+                        <a href="/privacy-policy" target="_blank" className="text-electric-blue hover:underline">
+                          политики конфиденциальности
+                        </a>
+                        {' '}и{' '}
+                        <a href="/terms" target="_blank" className="text-electric-blue hover:underline">
+                          пользовательского соглашения
+                        </a>
+                      </label>
+                    </motion.div>
+                    {errors.consent && (
+                      <p className="text-sm text-red-400 -mt-2">{errors.consent}</p>
+                    )}
+
                     {/* Кнопка отправки */}
                     <motion.button
                       type="submit"
@@ -378,10 +421,6 @@ export const CallbackForm = () => {
                         </span>
                       )}
                     </motion.button>
-
-                    <p className="text-xs text-light-grey/60 text-center">
-                      Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
-                    </p>
                   </form>
                 ) : (
                   <motion.div
